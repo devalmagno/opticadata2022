@@ -16,6 +16,7 @@ import { CollaboratorsController } from "./controllers/CollaboratorsController";
 import { CollaboratorLogsController } from "./controllers/CollaboratorLogsController";
 import { UsersController } from "./controllers/UsersController";
 import { CashiersController } from "./controllers/CashiersController";
+import { CashierMovesController } from "./controllers/CashierMovesController";
 
 const routes = Router();
 
@@ -36,6 +37,7 @@ const installmentsController = new InstallmentsController();
 const collaboratorsController = new CollaboratorsController();
 const collaboratorLogsController = new CollaboratorLogsController();
 const cashiersController = new CashiersController();
+const cashierMovesController = new CashierMovesController();
 
 // Routes for Settings
 routes.post("/settings/create", settingsController.create);
@@ -62,7 +64,12 @@ routes.post("/users/:id", usersController.login);
 
 // Routes for Cashiers
 routes.post("/cashiers/create", cashiersController.create);
-routes.post("/cashiers/", cashiersController.getCashiers);
+routes.get("/cashiers/", cashiersController.getCashiers);
+
+// Routes for Cashier Moves
+routes.post("/cashiers/moves/create", cashierMovesController.create);
+routes.get("/cashiers/moves", cashierMovesController.get);
+routes.get("/cashiers/moves/:id", cashierMovesController.getCashierMovesByCashierId);
 
 // Routes for Managers
 routes.post("/managers/register", managersController.create);

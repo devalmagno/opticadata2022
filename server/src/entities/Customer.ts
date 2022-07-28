@@ -5,22 +5,16 @@ import { v4 as uuid } from "uuid";
 class Customer {
 
     @PrimaryColumn()
-    id: string;
+    cus_id: string;
 
-    @Column({ length: 14 })
-    cpf: string;
+    @Column()
+    cus_cpf: string;
+    
+    @Column()
+    cus_name: string;
 
-    @Column({ length: 18 })
-    cnpj: string;
-
-    @Column({ length: 40 })
-    name: string;
-
-    @Column({ length: 100 })
-    email: string;
-
-    @Column({ length: 14 })
-    phone: string;
+    @Column()
+    cus_phone: string;
 
     @CreateDateColumn()
     created_at: Date;
@@ -29,8 +23,8 @@ class Customer {
     updated_at: Date;
 
     constructor() {
-        if (!this.id) {
-            this.id = uuid();
+        if (!this.cus_id) {
+            this.cus_id = uuid();
         }
     }
 }

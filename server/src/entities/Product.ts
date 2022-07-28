@@ -1,26 +1,29 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 import { v4 as uuid } from "uuid";
 
-import { ProductCategory } from "./ProductCategory";
-
 @Entity("products")
 class Product {
 
     @PrimaryColumn()
-    id: string;
-
-    @JoinColumn({ name: "productcategory_id"})
-    @ManyToOne(() => ProductCategory)
-    product_categories: ProductCategory;
+    pro_id: string;
 
     @Column()
-    productcategory_id: string;
-
-    @Column({ length: 40 })
-    name: string;
+    pro_type: string;
 
     @Column()
-    unit_price: number;
+    pro_desc: string;
+
+    @Column()
+    pro_est_min: number;
+
+    @Column()
+    pro_est_max: number;
+
+    @Column()
+    pro_unit_price: number;
+
+    @Column()
+    pro_status: boolean;
 
     @CreateDateColumn()
     created_at: Date;
@@ -29,8 +32,8 @@ class Product {
     updated_at: Date;
 
     constructor() {
-        if (!this.id) {
-            this.id = uuid();
+        if (!this.pro_id) {
+            this.pro_id = uuid();
         }
     }
 }

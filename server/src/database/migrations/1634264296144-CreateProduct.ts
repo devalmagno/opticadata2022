@@ -8,22 +8,39 @@ export class CreateProduct1634264296144 implements MigrationInterface {
                 name: "products",
                 columns: [
                     {
-                        name: "id",
+                        name: "pro_id",
                         type: "uuid",
                         isPrimary: true
                     },
                     {
-                        name: "productcategory_id",
-                        type: "uuid",
-                        isNullable: true
+                        name: "pro_type",
+                        type: "varchar",
+                        length: "26"
                     },
                     {
-                        name: "name",
-                        type: "varchar"
+                        name: "pro_desc",
+                        type: "varchar",
+                        length: "40"
                     },
                     {
-                        name: "unit_price",
-                        type: "float"
+                        name: "pro_est_min",
+                        type: "int"
+                    },
+                    {
+                        name: "pro_est_max",
+                        type: "int"
+                    },
+                    {
+                        name: "pro_unit_price",
+                        type: "decimal",
+                        precision: 5,
+                        scale: 2,
+                        default: 0
+                    },
+                    {
+                        name: "pro_status",
+                        type: "boolean"
+
                     },
                     {
                         name: "created_at",
@@ -35,25 +52,12 @@ export class CreateProduct1634264296144 implements MigrationInterface {
                         type: "timestamp",
                         default: "now()"
                     }
-                ]
+                ], 
             })
         )
-
-        await queryRunner.createForeignKey(
-            "products",
-            new TableForeignKey({
-                name: "FKProductCategories",
-                referencedTableName: "product_categories",
-                referencedColumnNames: ["id"],
-                columnNames: ["productcategory_id"],
-                onDelete: "SET NULL",
-                onUpdate: "SET NULL"
-            })
-        )
-    }
+   }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropForeignKey("products", "FKProductCategories");
         await queryRunner.dropTable("products");
     }
 

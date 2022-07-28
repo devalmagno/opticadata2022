@@ -1,32 +1,35 @@
 import {MigrationInterface, QueryRunner, Table} from "typeorm";
 
-export class CreateProvider1635531090700 implements MigrationInterface {
+export class CreateCustomerAddresses1658951344208 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: "providers",
+                name: "customer_addresses",
                 columns: [
                     {
-                        name: "prov_id",
+                        name: "cad_id",
                         type: "uuid",
                         isPrimary: true
                     },
                     {
-                        name: "prov_cnpj",
-                        type: "varchar",
-                        length: "18"
+                        name: "cad_cus_id",
+                        type: "uuid",
                     },
                     {
-                        name: "prov_desc",
+                        name: "cad_city",
                         type: "varchar",
-                        length: "16"
+                        length: "40"
                     },
                     {
-                        name: "prov_email",
+                        name: "cad_district",
                         type: "varchar",
-                        length: "80",
-                        isNullable: true
+                        length: "26"
+                    },
+                    {
+                        name: "cad_desc",
+                        type: "varchar",
+                        length: "40"
                     },
                     {
                         name: "created_at",
@@ -38,13 +41,24 @@ export class CreateProvider1635531090700 implements MigrationInterface {
                         type: "timestamp",
                         default: "now()"
                     }
+                ],
+                foreignKeys: [
+                    {
+                        name: "FKCustomer",
+                        referencedTableName: "customers",
+                        referencedColumnNames: ["cus_id"],
+                        columnNames: ["cad_cus_id"],
+                        onDelete: "CASCADE",
+                        onUpdate: "CASCADE"
+                    },
                 ]
+ 
             })
         )
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable("providers");
+        await queryRunner.dropTable("customer_addresses");
     }
 
 }

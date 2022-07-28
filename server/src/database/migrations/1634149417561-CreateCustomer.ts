@@ -8,31 +8,24 @@ export class CreateCustomer1634149417561 implements MigrationInterface {
                 name: "customers",
                 columns: [
                     {
-                        name: "id",
+                        name: "cus_id",
                         type: "uuid",
                         isPrimary: true
                     },
                     {
-                        name: "cpf",
+                        name: "cus_cpf",
                         type: "varchar",
-                        isNullable: true
+                        length: "14"
                     },
                     {
-                        name: "cnpj",
+                        name: "cus_name",
                         type: "varchar",
-                        isNullable: true
+                        length: "26"
                     },
                     {
-                        name: "name",
-                        type: "varchar"
-                    },
-                    {
-                        name: "email",
-                        type: "varchar"
-                    },
-                    {
-                        name: "phone",
-                        type: "varchar"
+                        name: "cus_phone",
+                        type: "varchar",
+                        length: "15"
                     },
                     {
                         name: "created_at",

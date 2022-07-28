@@ -8,13 +8,30 @@ export class CreatePayment1635619217816 implements MigrationInterface {
                 name: "payments",
                 columns: [
                     {
-                        name: "id",
+                        name: "pay_id",
                         type: "uuid",
                         isPrimary: true
                     },
                     {
-                        name: "type_of_payment",
+                        name: "pay_type_of_payment",
                         type: "varchar"
+                    },
+                    {
+                        name: "pay_desc",
+                        type: "varchar",
+                        length: "26"
+                    },
+                    {
+                        name: "pay_value",
+                        type: "decimal",
+                        precision: 5,
+                        scale: 2,
+                        default: 0
+                    },
+                    {
+                        name: "pay_status",
+                        type: "boolean",
+                        default: false
                     },
                     {
                         name: "created_at",

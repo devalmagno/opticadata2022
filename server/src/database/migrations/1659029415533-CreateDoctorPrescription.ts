@@ -1,32 +1,42 @@
 import {MigrationInterface, QueryRunner, Table} from "typeorm";
 
-export class CreateProvider1635531090700 implements MigrationInterface {
+export class CreateDoctorPrescription1659029415533 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: "providers",
+                name: "doctor_prescription",
                 columns: [
                     {
-                        name: "prov_id",
+                        name: "dpr_id",
                         type: "uuid",
                         isPrimary: true
                     },
                     {
-                        name: "prov_cnpj",
-                        type: "varchar",
-                        length: "18"
+                        name: "dpr_dnp_od",
+                        type: "float",
                     },
                     {
-                        name: "prov_desc",
-                        type: "varchar",
-                        length: "16"
+                        name: "dpr_dnp_oe",
+                        type: "float",
                     },
                     {
-                        name: "prov_email",
+                        name: "dpr_height_segment",
+                        type: "float"
+                    },
+                    {
+                        name: "dpr_dp",
+                        type: "float"
+                    },
+                    {
+                        name: "dpr_crm",
                         type: "varchar",
-                        length: "80",
-                        isNullable: true
+                        length: "9"
+
+                    },
+                    {
+                        name: "dpr_receipt_date",
+                        type: "timestamp"
                     },
                     {
                         name: "created_at",
@@ -38,13 +48,14 @@ export class CreateProvider1635531090700 implements MigrationInterface {
                         type: "timestamp",
                         default: "now()"
                     }
-                ]
+                ], 
             })
         )
+ 
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable("providers");
+        await queryRunner.dropTable("doctor_prescription");
     }
 
 }

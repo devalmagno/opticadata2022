@@ -2,34 +2,23 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, Pr
 import { v4 as uuid } from "uuid";
 
 import { Product } from "./Product";
-import { Provider } from "./Provider";
 
-@Entity("stock")
+@Entity("stocks")
 class Stock {
 
     @PrimaryColumn()
-    id: string;
+    sto_id: string;
 
-    @JoinColumn({ name: "product_id" })
+    @JoinColumn({ name: "sto_pro_id" })
     @ManyToOne(() => Product)
     product: Product;
 
     @Column()
-    product_id: string;
-
-    @JoinColumn({ name: "provider_id" })
-    @ManyToOne(() => Provider)
-    provider: Provider;
+    sto_pro_id: string;
 
     @Column()
-    provider_id: string;
-
-    @Column()
-    quantity: number;
-
-    @Column()
-    entry: Boolean;
-
+    sto_quantity: number;
+    
     @CreateDateColumn()
     created_at: Date;
 
@@ -37,8 +26,8 @@ class Stock {
     updated_at: Date;
 
     constructor() {
-        if (!this.id) {
-            this.id = uuid(); 
+        if (!this.sto_id) {
+            this.sto_id = uuid(); 
         }
     }
 }

@@ -5,16 +5,16 @@ import { v4 as uuid } from "uuid";
 class Provider {
 
     @PrimaryColumn()
-    id: string;
+    prov_id: string;
 
-    @Column({ length: 18 })
-    cnpj: string;
+    @Column()
+    prov_cnpj: string;
 
-    @Column({ length: 40 })
-    name: string;
+    @Column()
+    prov_desc: string;
 
-    @Column({ length: 14 })
-    phone: string;
+    @Column()
+    prov_email: string;
 
     @CreateDateColumn()
     created_at: Date;
@@ -23,8 +23,8 @@ class Provider {
     updated_at: Date;
 
     constructor() {
-        if (!this.id) {
-            this.id = uuid();
+        if (!this.prov_id) {
+            this.prov_id = uuid();
         }
     }
 }
