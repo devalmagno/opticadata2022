@@ -6,7 +6,6 @@ import { CustomerAddressesController } from "./controllers/CustomerAddressesCont
 import { InstallmentsController } from "./controllers/InstallmentsController";
 import { ManagersController } from "./controllers/ManagersController";
 import { OccupationsController } from "./controllers/OccupationsController";
-import { OrdersController } from "./controllers/OrdersController";
 import { PaymentsController } from "./controllers/PaymentsController";
 import { ProductCategoriesController } from "./controllers/ProductCategoriesController";
 import { ProductsController } from "./controllers/ProductsController";
@@ -20,6 +19,8 @@ import { UsersController } from "./controllers/UsersController";
 import { CashiersController } from "./controllers/CashiersController";
 import { CashierMovesController } from "./controllers/CashierMovesController";
 import { DoctorPrescriptionController } from "./controllers/DoctorPrescriptionController";
+import { EyeInfoController } from "./controllers/EyeInfoController";
+import { SalesController } from "./controllers/SalesController";
 
 const routes = Router();
 
@@ -36,7 +37,6 @@ const productsController = new ProductsController();
 const providersController = new ProvidersControllers();
 const stockController = new StockController();
 const stockMovesController = new StockMovesController();
-const ordersController = new OrdersController();
 const paymentsController = new PaymentsController();
 const installmentsController = new InstallmentsController();
 const collaboratorsController = new CollaboratorsController();
@@ -44,6 +44,8 @@ const collaboratorLogsController = new CollaboratorLogsController();
 const cashiersController = new CashiersController();
 const cashierMovesController = new CashierMovesController();
 const doctorPrescriptionController = new DoctorPrescriptionController();
+const eyeInfoContrller = new EyeInfoController();
+const salesController = new SalesController();
 
 // Routes for Settings
 routes.post("/settings/create", settingsController.create);
@@ -139,12 +141,6 @@ routes.post("/stockmoves/create", stockMovesController.create);
 routes.get("/stockmoves/", stockMovesController.getStocks);
 routes.get("/stockmoves/:id", stockMovesController.getStocksByStockId);
 
-// Routes for Orders
-routes.post("/orders", ordersController.create);
-routes.get("/orders", ordersController.getFullOrderInfo);
-routes.get("/orders/:id", ordersController.getOrdersById);
-routes.delete("/orders/:id", ordersController.removeOrder);
-
 // Routes for Payments
 routes.get('/payments/', paymentsController.getPayments);
 routes.get('/payments/:id', paymentsController.getPaymentById);
@@ -153,5 +149,19 @@ routes.get('/payments/:id', paymentsController.getPaymentById);
 routes.post('/doctorprescription/create', doctorPrescriptionController.create);
 routes.get('/doctorprescription/:id', doctorPrescriptionController.getDoctorPrescriptionBySaleId);
 routes.put('/doctorprescription/:id', doctorPrescriptionController.update);
+
+// Routes for Eye Info
+routes.post('/eyeinfo/create', eyeInfoContrller.create);
+routes.get('/eyeinfo/:id', eyeInfoContrller.getEyeInfoByDoctorPrescriptionId);
+routes.put('/eyeinfo/:id', eyeInfoContrller.update);
+
+// Routes for Sales
+routes.post('/sales/create', salesController.create);
+routes.get('/sales/', salesController.getSales);
+routes.get('/sales/customer/:id', salesController.getSaleByCustomerId);
+routes.get('/sales/doctorprescription/:id', salesController.getSaleByDoctorPrescriptionId);
+routes.get('/sales/collaborator/:id', salesController.getSaleByCollaboratorId);
+routes.put('/sales/deliveryday/:id', salesController.updateDeliveryDay);
+routes.put('/sales/status/:id', salesController.updateSaleStatus);
 
 export { routes };
