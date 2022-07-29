@@ -21,6 +21,7 @@ import { CashierMovesController } from "./controllers/CashierMovesController";
 import { DoctorPrescriptionController } from "./controllers/DoctorPrescriptionController";
 import { EyeInfoController } from "./controllers/EyeInfoController";
 import { SalesController } from "./controllers/SalesController";
+import { SaleProductsController } from "./controllers/SaleProductsController";
 
 const routes = Router();
 
@@ -46,6 +47,7 @@ const cashierMovesController = new CashierMovesController();
 const doctorPrescriptionController = new DoctorPrescriptionController();
 const eyeInfoContrller = new EyeInfoController();
 const salesController = new SalesController();
+const saleProductsController = new SaleProductsController();
 
 // Routes for Settings
 routes.post("/settings/create", settingsController.create);
@@ -142,8 +144,10 @@ routes.get("/stockmoves/", stockMovesController.getStocks);
 routes.get("/stockmoves/:id", stockMovesController.getStocksByStockId);
 
 // Routes for Payments
-routes.get('/payments/', paymentsController.getPayments);
+routes.post('/payments/create', paymentsController.create);
+routes.get('/payments/sale/:id', paymentsController.getPaymentsBySaleId);
 routes.get('/payments/:id', paymentsController.getPaymentById);
+routes.put('/payments/:id', paymentsController.updatePaymentStatus);
 
 // Routes for Doctor Prescription
 routes.post('/doctorprescription/create', doctorPrescriptionController.create);
@@ -163,5 +167,10 @@ routes.get('/sales/doctorprescription/:id', salesController.getSaleByDoctorPresc
 routes.get('/sales/collaborator/:id', salesController.getSaleByCollaboratorId);
 routes.put('/sales/deliveryday/:id', salesController.updateDeliveryDay);
 routes.put('/sales/status/:id', salesController.updateSaleStatus);
+
+// Routes for Sale Products
+routes.post('/saleproducts/create', saleProductsController.create);
+routes.get('/saleproducts/sale/:id', saleProductsController.getSaleProductBySaleId);
+routes.get('/saleproducts/product/:id', saleProductsController.getSaleByProductId);
 
 export { routes };

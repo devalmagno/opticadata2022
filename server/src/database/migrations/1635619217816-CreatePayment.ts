@@ -13,6 +13,10 @@ export class CreatePayment1635619217816 implements MigrationInterface {
                         isPrimary: true
                     },
                     {
+                        name: "pay_sal_id",
+                        type: "uuid",
+                    },
+                    {
                         name: "pay_type_of_payment",
                         type: "varchar"
                     },
@@ -36,6 +40,11 @@ export class CreatePayment1635619217816 implements MigrationInterface {
                     {
                         name: "pay_date",
                         type: "timestamp",
+                        isNullable: true
+                    },
+                    {
+                        name: "pay_pending_date",
+                        type: "timestamp",
                     },
                     {
                         name: "created_at",
@@ -47,6 +56,15 @@ export class CreatePayment1635619217816 implements MigrationInterface {
                         type: "timestamp",
                         default: "now()"
                     }
+                ],
+                foreignKeys: [
+                    {
+                        name: "FKSales",
+                        referencedTableName: "sales",
+                        referencedColumnNames: ["sal_id"],
+                        columnNames: ["pay_sal_id"],
+                        onUpdate: "CASCADE"
+                    },
                 ]
             })
         )
