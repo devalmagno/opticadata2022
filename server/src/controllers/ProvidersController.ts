@@ -6,18 +6,18 @@ class ProvidersControllers {
 
     async create(req: Request, res: Response) {
         const {
-            cnpj,
-            name,
-            phone
+            prov_cnpj,
+            prov_desc, 
+            prov_email       
         } = req.body;
  
         const providersService = new ProvidersService();
 
         try {
             const provider = await providersService.create({
-                cnpj,
-                name,
-                phone
+                prov_cnpj,
+                prov_desc, 
+                prov_email       
             });
 
             return res.status(201).json(provider);
@@ -38,17 +38,34 @@ class ProvidersControllers {
         }
     }
 
+    async getProviderById(req: Request, res: Response) {
+        const { id } = req.params;
+        const providersService = new ProvidersService();
+        
+        try {
+            const providers = await providersService.getProviderById(id);
+
+            return res.status(201).json(providers);
+        } catch(err) {
+            return res.status(401).json(err.message)
+        }
+    }
+
     async updateProvider(req: Request, res: Response) {
         const { id } = req.params;
         const {
-            name,
-            phone
+            prov_desc,
+            prov_email
         } = req.body;
 
         const providersService = new ProvidersService();
         
         try {
-            const provider = await providersService.updateProvider({ id, name, phone });
+            const provider = await providersService.updateProvider(
+                id,
+                prov_desc,
+                prov_email
+            );
 
             return res.status(201).json(provider);
         } catch(err) {

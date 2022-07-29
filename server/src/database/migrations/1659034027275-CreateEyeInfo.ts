@@ -1,41 +1,39 @@
 import {MigrationInterface, QueryRunner, Table} from "typeorm";
 
-export class CreatePayment1635619217816 implements MigrationInterface {
+export class CreateEyeInfo1659034027275 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: "payments",
+                name: "eye_info",
                 columns: [
                     {
-                        name: "pay_id",
+                        name: "ein_id",
                         type: "uuid",
                         isPrimary: true
                     },
                     {
-                        name: "pay_type_of_payment",
-                        type: "varchar"
+                        name: "ein_dpr_id",
+                        type: "uuid",
                     },
                     {
-                        name: "pay_desc",
+                        name: "ein_type",
                         type: "varchar",
-                        length: "26"
+                        length: "2"
                     },
                     {
-                        name: "pay_value",
-                        type: "decimal",
-                        precision: 5,
-                        scale: 2,
-                        default: 0
+                        name: "ein_esf",
+                        type: "float"
                     },
                     {
-                        name: "pay_status",
-                        type: "boolean",
-                        default: false
+                        name: "ein_cil",
+                        type: "float"
                     },
                     {
-                        name: "pay_date",
-                        type: "timestamp",
+                        name: "ein_eixo",
+                        type: "varchar",
+                        length: "9"
+
                     },
                     {
                         name: "created_at",
@@ -47,13 +45,25 @@ export class CreatePayment1635619217816 implements MigrationInterface {
                         type: "timestamp",
                         default: "now()"
                     }
+                ], 
+                foreignKeys: [
+                    {
+                        name: "FKDoctorPrescription",
+                        referencedTableName: "doctor_prescription",
+                        referencedColumnNames: ["dpr_id"],
+                        columnNames: ["ein_dpr_id"],
+                        onDelete: "CASCADE",
+                        onUpdate: "CASCADE",
+                    }
                 ]
+
             })
         )
+ 
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable("payments");
+        await queryRunner.dropTable("eye_info");
     }
 
 }

@@ -3,11 +3,10 @@ import { getCustomRepository, Repository } from "typeorm";
 import { Provider } from "../entities/Provider";
 import { ProvidersRepository } from "../repositories/ProvidersRepository";
 
-interface IProvidersCreate {
-    id?: string;
-    cnpj?: string;
-    name: string;
-    phone: string;
+interface IProvider {
+    prov_cnpj: string;
+    prov_desc: string;
+    prov_email: string;
 }
 
 class ProvidersService {
@@ -17,17 +16,21 @@ class ProvidersService {
         this.providersRepository = getCustomRepository(ProvidersRepository);
     }
 
-    async create({ name, phone, cnpj }: IProvidersCreate) {
-        const providerAlreadyExists = await this.providersRepository.findOne({ cnpj });
+    async create({ 
+        prov_cnpj,
+        prov_desc, 
+        prov_email, 
+    }: IProvider) {
+        const providerAlreadyExists = await this.providersRepository.findOne({ prov_cnpj });
 
-        if (providerAlreadyExists) {
+        if (providerAlreadyExists)
             throw new Error("Provider already exists");
-        }
+        
 
         const provider = this.providersRepository.create({
-            name,
-            phone,
-            cnpj
+            prov_cnpj,
+            prov_desc, 
+            prov_email, 
         });
 
         await this.providersRepository.save(provider);
@@ -43,14 +46,27 @@ class ProvidersService {
         return providers;
     }
 
-    async updateProvider({ id, name, phone }: IProvidersCreate) {
-        const provider = await this.providersRepository.findOne({
-            id,
-        });
+    async getProviderById(id: string) {
+        const provider = await this.providersRepository.findOne(id);
+
+        if (!provider) throw new Error("There is no provider in the database.");
+
+        return provider;
+    }
+
+    async updateProvider(
+        id: string,
+        prov_desc: string,
+        prov_email: string
+    ) {
+        const provider = await this.providersRepository.findOne(id);
 
         if (!provider) throw new Error("Provider does not exists!!");
 
-        this.providersRepository.merge(provider, { name, phone });
+        this.providersRepository.merge(provider, {
+            prov_desc,
+            prov_email
+        });
 
         const updatedProvider = await this.providersRepository.save(provider);
 
@@ -58,9 +74,7 @@ class ProvidersService {
     }
 
     async removeProvider(id: string) {
-        const provider = await this.providersRepository.findOne({
-            id,
-        });
+        const provider = await this.providersRepository.findOne(id);
 
         if (!provider) throw new Error("Provider does not exists!!");
 

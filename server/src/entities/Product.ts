@@ -14,12 +14,6 @@ class Product {
     pro_desc: string;
 
     @Column()
-    pro_est_min: number;
-
-    @Column()
-    pro_est_max: number;
-
-    @Column()
     pro_unit_price: number;
 
     @Column()

@@ -33,7 +33,16 @@ class StockMove {
     smo_sto_id: string;
 
     @Column()
-    sto_quantity: number;
+    smo_type: string;
+
+    @Column()
+    smo_desc: string;
+
+    @Column()
+    smo_quantity: number;
+
+    @Column()
+    smo_unit_price: number;
     
     @CreateDateColumn()
     created_at: Date;

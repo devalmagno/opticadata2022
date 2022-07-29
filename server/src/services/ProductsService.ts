@@ -3,13 +3,13 @@ import { getCustomRepository, Repository } from 'typeorm';
 
 import { Product } from '../entities/Product';
 import { ProductsRepository } from '../repositories/ProductsRepository';
+
 import { StockService } from './StockService';
 
-interface IProductCreate {
-    id?: string;
-    productcategory_id: string;
-    name: string;
-    unit_price: number;
+interface IProduct {
+    pro_type: string;
+    pro_desc: string;
+    pro_unit_price: number;
 }
 
 class ProductsService {
@@ -19,9 +19,9 @@ class ProductsService {
         this.productsRepository = getCustomRepository(ProductsRepository);
     }
 
-    async create({ productcategory_id, name, unit_price }: IProductCreate) {
+    async create({ pro_desc, pro_type, pro_unit_price }: IProduct) {
         const productAlreadyExists = await this.productsRepository.findOne({
-            name,
+            pro_desc,
         });
 
         if (productAlreadyExists) {
@@ -29,9 +29,9 @@ class ProductsService {
         }
 
         const product = this.productsRepository.create({
-            productcategory_id,
-            name,
-            unit_price
+           pro_desc,
+           pro_unit_price,
+           pro_type 
         });
 
         await this.productsRepository.save(product);
@@ -44,32 +44,12 @@ class ProductsService {
 
         if (!products) throw new Error("There is no product data in the database");
 
-        const stockService = new StockService();
-
-        const stock = await stockService.getStocks();
-
-        const productList = products.map(product => {
-            let quantity = 0;
-
-            stock.filter(stock => stock.product_id == product.id).map(stock => {
-                if (stock.entry) quantity += stock.quantity;
-                else quantity -= stock.quantity;
-            })
-
-            return {
-                id: product.id,
-                name: product.name,
-                unit_price: product.unit_price,
-                quantity
-            }
-        })
-
-        return productList;
+        return products;
     }
 
     async getProductById(id: string) {
         const product = await this.productsRepository.findOne({
-            id
+            pro_id: id
         });
 
         if (!product) {
@@ -79,9 +59,9 @@ class ProductsService {
         return product;
     }
 
-    async updateProduct({ productcategory_id, id, name, unit_price }: IProductCreate) {
+    async updateProduct(id: string, { pro_desc, pro_type, pro_unit_price}: IProduct) {
         const product = await this.productsRepository.findOne({
-            id,
+            pro_id: id,
         });
 
         if (!product) {
@@ -89,9 +69,9 @@ class ProductsService {
         }
 
         this.productsRepository.merge(product, {
-            name, 
-            unit_price, 
-            productcategory_id,
+            pro_desc, 
+            pro_unit_price, 
+            pro_type,
         });
 
         const updatedProduct = await this.productsRepository.save(product);
@@ -99,18 +79,22 @@ class ProductsService {
         return updatedProduct;
     }
 
-    async removeProduct(id: string) {
+    async updateProductStatus(id: string, pro_status: boolean) {
         const product = await this.productsRepository.findOne({
-            id,
+            pro_id: id
         });
 
-        if (!product) {
-            throw new Error("Product doesn't exists!!");
-        }
+        if (!product) throw new Error("Product doesn't exists!!");
+        if (product.pro_status == pro_status && pro_status == true) throw new Error("Product alredy enabled");
+        if (product.pro_status == pro_status && pro_status == false) throw new Error("Product alredy disabled");
 
-        this.productsRepository.remove(product);
+        this.productsRepository.merge(product, {
+            pro_status
+        });
 
-        return product;
+        const updatedProduct = await this.productsRepository.save(product);
+
+        return updatedProduct;
     }
 }
 

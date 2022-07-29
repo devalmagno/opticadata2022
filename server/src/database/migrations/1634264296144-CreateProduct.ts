@@ -23,14 +23,6 @@ export class CreateProduct1634264296144 implements MigrationInterface {
                         length: "40"
                     },
                     {
-                        name: "pro_est_min",
-                        type: "int"
-                    },
-                    {
-                        name: "pro_est_max",
-                        type: "int"
-                    },
-                    {
                         name: "pro_unit_price",
                         type: "decimal",
                         precision: 5,
@@ -39,8 +31,8 @@ export class CreateProduct1634264296144 implements MigrationInterface {
                     },
                     {
                         name: "pro_status",
-                        type: "boolean"
-
+                        type: "boolean",
+                        default: true
                     },
                     {
                         name: "created_at",

@@ -4,17 +4,19 @@ import { CustomersService } from "../services/CustomersService";
 
 class CustomersController {
     async create(req: Request, res: Response) {
-        const { email, name, phone, cnpj, cpf } = req.body;
+        const { 
+            cus_cpf,
+            cus_name,
+            cus_phone
+        } = req.body;
 
         const customersService = new CustomersService();
 
         try {
             const customer = await customersService.create({
-                email,
-                name,
-                phone,
-                cnpj,
-                cpf
+                cus_cpf,
+                cus_name,
+                cus_phone
             });
     
             return res.status(201).json(customer);
@@ -35,13 +37,13 @@ class CustomersController {
         }
     }
 
-    async getByEmail(req: Request, res: Response) {
-        const { email } = req.params;
+    async getCustomerById(req: Request, res: Response) {
+        const { id } = req.params;
 
         const customersService = new CustomersService();
 
         try {
-            const customer = await customersService.getCustomer(email);
+            const customer = await customersService.getCustomerById(id);
 
             return res.status(200).json(customer);
         } catch(err) {
@@ -49,13 +51,28 @@ class CustomersController {
         }
     }
 
-    async removeByEmail(req: Request, res: Response) {
-        const { email } = req.params;
+    async update(req: Request, res: Response) {
+        const { id } = req.params;
+        const { cus_name, cus_phone } = req.body;
 
         const customersService = new CustomersService();
 
         try {
-            const customer = await customersService.remove(email);
+            const customer = await customersService.update(id, cus_name, cus_phone);
+
+            return res.status(200).json(customer);
+        } catch(err) {
+            return res.status(400).json({ message: err.message });
+        }
+    }
+
+    async remove(req: Request, res: Response) {
+        const { id } = req.params;
+
+        const customersService = new CustomersService();
+
+        try {
+            const customer = await customersService.remove(id);
 
             return res.status(200).json(customer);
         } catch(err) {

@@ -3,12 +3,10 @@ import { getCustomRepository, Repository } from "typeorm";
 import { Customer } from '../entities/Customer';
 import { CustomersRepository } from "../repositories/CustomersRepository";
 
-interface ICustomerCreate {
-    cpf?: string;
-    cnpj?: string;
-    name: string;
-    email: string;
-    phone: string;
+interface ICustomer {
+    cus_cpf: string;
+    cus_name: string;
+    cus_phone: string;
 }
 
 class CustomersService {
@@ -18,9 +16,13 @@ class CustomersService {
         this.customersRepository = getCustomRepository(CustomersRepository);
     }
 
-    async create({ email, name, phone, cnpj, cpf }: ICustomerCreate) {
+    async create({
+        cus_cpf,
+        cus_name,
+        cus_phone
+    }: ICustomer) {
         const customerAlreadyExists = await this.customersRepository.findOne({
-            email,
+            cus_cpf,
         });
 
         if (customerAlreadyExists) {
@@ -28,11 +30,9 @@ class CustomersService {
         } 
         
         const customer = this.customersRepository.create({
-            cpf,
-            cnpj,
-            name,
-            email,
-            phone
+            cus_cpf,
+            cus_name,
+            cus_phone
         });
 
         await this.customersRepository.save(customer);
@@ -48,10 +48,8 @@ class CustomersService {
         return customers;
     }
 
-    async getCustomer(email: string) {
-        const customer = await this.customersRepository.findOne({
-            email
-        });
+    async getCustomerById(id: string) {
+        const customer = await this.customersRepository.findOne(id);
 
         if (!customer) {
             throw new Error("Customer does not exists!!");
@@ -60,9 +58,25 @@ class CustomersService {
         return customer;
     }
 
-    async remove(email: string) {
+    async update(id: string, cus_name: string, cus_phone: string) {
+        const customer = await this.customersRepository.findOne(id);
+
+        if (!customer)
+            throw new Error("Customer does not exists!!");
+
+        this.customersRepository.merge(customer, {
+            cus_name,
+            cus_phone
+        });
+
+        const updatedCustomer = await this.customersRepository.save(customer);
+
+        return updatedCustomer;
+    }
+
+    async remove(cus_cpf: string) {
         const customer = await this.customersRepository.findOne({
-            email
+            cus_cpf
         });
 
         if (!customer) {

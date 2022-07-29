@@ -36,6 +36,10 @@ export class CreateStockMoves1658949726501 implements MigrationInterface {
                         length: "80",
                     },
                     {
+                        name: "smo_quantity",
+                        type: "int",
+                    },
+                    {
                         name: "smo_unit_price",
                         type: "decimal",
                         precision: 5,
@@ -59,9 +63,8 @@ export class CreateStockMoves1658949726501 implements MigrationInterface {
                         name: "FKProduct",
                         referencedTableName: "products",
                         referencedColumnNames: ["pro_id"],
-                        columnNames: ["sto_pro_id"],
-                        onDelete: "SET NULL",
-                        onUpdate: "SET NULL"
+                        columnNames: ["smo_pro_id"],
+                        onUpdate: "CASCADE"
                     },
                     {
                         name: "FKStock",
@@ -71,15 +74,6 @@ export class CreateStockMoves1658949726501 implements MigrationInterface {
                         onDelete: "CASCADE",
                         onUpdate: "CASCADE"
                     },
-                    {
-                        name: "FKProduct",
-                        referencedTableName: "products",
-                        referencedColumnNames: ["pro_id"],
-                        columnNames: ["sto_pro_id"],
-                        onDelete: "CASCADE",
-                        onUpdate: "CASCADE"
-                    },
- 
                 ]
             })
         )

@@ -3,11 +3,11 @@ import { getCustomRepository, Repository } from "typeorm";
 import { Stock } from '../entities/Stock';
 import { StockRepository } from "../repositories/StockRepository";
 
-interface IStockCreate {
-    product_id: string;
-    provider_id?: string;
-    quantity: number;
-    entry?: boolean;
+interface IStock {
+    sto_pro_id: string;
+    sto_quantity: number;
+    sto_min: number;
+    sto_max: number;
 }
 
 class StockService {
@@ -18,34 +18,22 @@ class StockService {
     }
 
     async create({ 
-        quantity, 
-        product_id, 
-        provider_id,
-        entry = false
-    }: IStockCreate) {
+        sto_max,
+        sto_min,
+        sto_pro_id,
+        sto_quantity
+    }: IStock) {
         const stockAlreadyExists = await this.stockRepository.find({
-            where: { product_id }
+            where: { sto_pro_id }
         });
 
-        let quantityInStock = 0;
-
-        if (stockAlreadyExists) {
-            stockAlreadyExists.forEach(stock => {
-                if (stock.entry == true) {
-                    quantityInStock += stock.quantity;
-                } else {
-                    quantityInStock -= stock.quantity;
-                }
-            })
-        }
-
-        if (entry == false && (!stockAlreadyExists || quantityInStock < quantity)) throw new Error ("You must have the corresponding or greater quantity in stock to make a subtraction.")
+        if (stockAlreadyExists) throw new Error("Stock already exists.");
         
         const stock = this.stockRepository.create({
-            quantity,
-            product_id,
-            provider_id,
-            entry
+            sto_max,
+            sto_min,
+            sto_pro_id,
+            sto_quantity   
         });
 
         await this.stockRepository.save(stock);
@@ -61,14 +49,49 @@ class StockService {
         return stocks;
     }
 
-    async getStockByProduct(product_id: string) {
-        const stock = await this.stockRepository.find({
-            where: { product_id }
+    async getStockByProduct(sto_pro_id: string) {
+        const stock = await this.stockRepository.findOne({
+            where: { sto_pro_id }
         });
 
         if (!stock) throw new Error("Stock do not exists");
 
         return stock;
+    }
+
+    async updateQuantityInStock(id: string, quantity: number, operationType: string) {
+        const stock = await this.stockRepository.findOne(id);
+
+        if (!stock) throw new Error("Stock do not exists");
+
+        let sto_quantity = stock.sto_quantity;
+
+        if (operationType == '+') sto_quantity += quantity; 
+        if (operationType == '-') sto_quantity -= quantity; 
+
+        if (sto_quantity > stock.sto_max || sto_quantity < stock.sto_min)
+            throw new Error(`The quantity in stock must be between ${stock.sto_min}...${stock.sto_max}.`);
+
+        this.stockRepository.merge(stock, { sto_quantity });
+
+        const updatedStock = await this.stockRepository.save(stock);
+
+        return updatedStock;
+    }
+
+    async updateStockMinOrMax(id: string, sto_min: number, sto_max: number) {
+        const stock = await this.stockRepository.findOne(id);
+
+        if (!stock) throw new Error("Stock do not exists");
+
+        if (sto_min > stock.sto_quantity || sto_max < stock.sto_quantity)
+            throw new Error(`Stock Min or Max must be greater or smaller than ${stock.sto_quantity}`);
+
+        this.stockRepository.merge(stock, { sto_min, sto_max });
+
+        const updatedStock = await this.stockRepository.save(stock);
+
+        return updatedStock;
     }
 }
 

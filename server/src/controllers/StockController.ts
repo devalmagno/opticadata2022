@@ -4,16 +4,21 @@ import { StockService } from "../services/StockService";
 
 class StockController {
     async create(req: Request, res: Response) {
-        const { quantity, product_id, provider_id, entry } = req.body;
+        const { 
+            sto_max,
+            sto_min,
+            sto_pro_id,
+            sto_quantity
+        } = req.body;
 
         const stockService = new StockService();
 
         try {
             const stock = await stockService.create({
-                provider_id,
-                product_id,
-                entry,
-                quantity
+                sto_max,
+                sto_min,
+                sto_pro_id,
+                sto_quantity           
             });
         
             return res.status(201).json(stock);
@@ -35,18 +40,34 @@ class StockController {
     }
 
     async getStocksByProduct(req: Request, res: Response) {
-        const { product_id } = req.body;
+        const { sto_pro_id } = req.body;
 
         const stockService = new StockService();
 
         try {
-            const stock = await stockService.getStockByProduct(product_id);
+            const stock = await stockService.getStockByProduct(sto_pro_id);
         
             return res.status(200).json(stock);
         } catch(err) {
             return res.status(400).json({ message: err.message });
         }
     }
+
+    async updateStockMinOrMax(req: Request, res: Response) {
+        const { id } = req.params;
+        const { sto_min, sto_max } = req.body;
+
+        const stockService = new StockService();
+
+        try {
+            const stock = await stockService.updateStockMinOrMax(id, sto_min, sto_max);
+        
+            return res.status(200).json(stock);
+        } catch(err) {
+            return res.status(400).json({ message: err.message });
+        }
+    }
+
 }
 
 export { StockController };

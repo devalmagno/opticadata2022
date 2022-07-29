@@ -18,7 +18,13 @@ class Stock {
 
     @Column()
     sto_quantity: number;
-    
+
+    @Column()
+    sto_min: number;
+
+    @Column()
+    sto_max: number;
+ 
     @CreateDateColumn()
     created_at: Date;
 

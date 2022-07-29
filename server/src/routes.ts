@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import { SettingsController } from "./controllers/SettingsController";
 import { CustomersController } from "./controllers/CustomersController";
+import { CustomerAddressesController } from "./controllers/CustomerAddressesController";
 import { InstallmentsController } from "./controllers/InstallmentsController";
 import { ManagersController } from "./controllers/ManagersController";
 import { OccupationsController } from "./controllers/OccupationsController";
@@ -11,12 +12,14 @@ import { ProductCategoriesController } from "./controllers/ProductCategoriesCont
 import { ProductsController } from "./controllers/ProductsController";
 import { ProvidersControllers } from "./controllers/ProvidersController";
 import { StockController } from "./controllers/StockController";
+import { StockMovesController } from "./controllers/StockMovesController";
 import { WorkersController } from "./controllers/WorkersController";
 import { CollaboratorsController } from "./controllers/CollaboratorsController";
 import { CollaboratorLogsController } from "./controllers/CollaboratorLogsController";
 import { UsersController } from "./controllers/UsersController";
 import { CashiersController } from "./controllers/CashiersController";
 import { CashierMovesController } from "./controllers/CashierMovesController";
+import { DoctorPrescriptionController } from "./controllers/DoctorPrescriptionController";
 
 const routes = Router();
 
@@ -27,10 +30,12 @@ const managersController = new ManagersController();
 const occupationsController = new OccupationsController();
 const workersController = new WorkersController();
 const customersController = new CustomersController();
+const customerAddressesController = new CustomerAddressesController();
 const productCategoriesController = new ProductCategoriesController();
 const productsController = new ProductsController();
 const providersController = new ProvidersControllers();
 const stockController = new StockController();
+const stockMovesController = new StockMovesController();
 const ordersController = new OrdersController();
 const paymentsController = new PaymentsController();
 const installmentsController = new InstallmentsController();
@@ -38,6 +43,7 @@ const collaboratorsController = new CollaboratorsController();
 const collaboratorLogsController = new CollaboratorLogsController();
 const cashiersController = new CashiersController();
 const cashierMovesController = new CashierMovesController();
+const doctorPrescriptionController = new DoctorPrescriptionController();
 
 // Routes for Settings
 routes.post("/settings/create", settingsController.create);
@@ -96,35 +102,42 @@ routes.put("/workers/password/:id", workersController.changePassword);
 routes.delete("/workers/:id", managersController.authorizationReq, workersController.removeWorker);
 
 // Routes for Customers
+routes.post("/customers/create", customersController.create);
 routes.get("/customers", customersController.getCustomers);
-routes.post("/customers/register", customersController.create);
-routes.get("/customers/:email", customersController.getByEmail);
-routes.delete("/customers/:email", customersController.removeByEmail);
+routes.get("/customers/:id", customersController.getCustomerById);
+routes.put("/customers/:id", customersController.update);
+routes.delete("/customers/:id", customersController.remove);
 
-// Routes for Product Categories
-routes.post("/productcategories/register", productCategoriesController.create);
-routes.get("/productcategories/", productCategoriesController.getProductCategories);
-routes.get("/productcategories/:id", productCategoriesController.getProductCategoryById);
-routes.put("/productcategories/:id", productCategoriesController.updateProductCategory);
-routes.delete("/productcategories/:id", productCategoriesController.removeProductCategory);
+// Routes for Customer Addresses
+routes.post("/customeraddresses/create", customerAddressesController.create);
+routes.get("/customeraddresses/:id", customerAddressesController.getCustomerAddressesByCustomerId);
+routes.put("/customeraddresses/:id", customerAddressesController.update);
+routes.delete("/customeraddresses/:id", customerAddressesController.remove);
 
 // Routes for Products
 routes.post("/products/register", productsController.create);
 routes.get("/products/", productsController.getProducts);
 routes.get("/products/:id", productsController.getProductById);
 routes.put("/products/:id", productsController.updateProduct);
-routes.delete("/products/:id", productsController.removeProduct);
+routes.delete("/products/:id", productsController.updateProductStatus);
 
 // Routes for Providers
 routes.post("/providers", providersController.create);
 routes.get("/providers", providersController.getProviders);
+routes.get("/providers/:id", providersController.getProviderById);
 routes.put("/providers/:id", providersController.updateProvider);
 routes.delete("/providers/:id", providersController.removeProvider);
 
 // Routes for Stock
-routes.post("/stock", stockController.create);
-routes.get("/stock", stockController.getStocks);
+routes.post("/stocks/create", stockController.create);
+routes.get("/stocks", stockController.getStocks);
 routes.get("/stock/product", stockController.getStocksByProduct);
+routes.put("/stock/:id", stockController.updateStockMinOrMax);
+
+// Routes for Stock Moves
+routes.post("/stockmoves/create", stockMovesController.create);
+routes.get("/stockmoves/", stockMovesController.getStocks);
+routes.get("/stockmoves/:id", stockMovesController.getStocksByStockId);
 
 // Routes for Orders
 routes.post("/orders", ordersController.create);
@@ -136,10 +149,9 @@ routes.delete("/orders/:id", ordersController.removeOrder);
 routes.get('/payments/', paymentsController.getPayments);
 routes.get('/payments/:id', paymentsController.getPaymentById);
 
-// Routes for Installments 
-routes.get("/installments/", installmentsController.getInstallments);
-routes.get("/installments/:date", installmentsController.getInstallmentsByDate);
-routes.get("/installments/:payment_id", installmentsController.getInstallmentsByPayment);
-routes.put("/installments/:id", installmentsController.updateInstallment);
+// Routes for Doctor Prescription
+routes.post('/doctorprescription/create', doctorPrescriptionController.create);
+routes.get('/doctorprescription/:id', doctorPrescriptionController.getDoctorPrescriptionBySaleId);
+routes.put('/doctorprescription/:id', doctorPrescriptionController.update);
 
 export { routes };

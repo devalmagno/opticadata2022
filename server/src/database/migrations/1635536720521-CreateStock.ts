@@ -17,6 +17,15 @@ export class CreateStock1635536720521 implements MigrationInterface {
                         type: "uuid",
                     },
                     {
+                        name: "sto_min",
+                        type: "int"
+                    },
+                    {
+                        name: "sto_max",
+                        type: "int"
+                    },
+ 
+                    {
                         name: "sto_quantity",
                         type: "int"
                     },
