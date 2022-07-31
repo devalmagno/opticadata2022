@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 
-import { Customer } from "../OrderSidebar";
+import { Customer } from "../../pages/orders";
 
 import styles from "./styles.module.scss";
 
@@ -86,7 +86,7 @@ const WorkerOrder = ({ orderCustomers, setOrderCustomers, customers }: Props) =>
                         <div
                             ref={addToRefs}
                             className={styles.option}
-                            key={worker.id}
+                            key={worker.cus_id}
                             onClick={() => {
                                 handleWorkers(worker);
                             }}
@@ -97,8 +97,8 @@ const WorkerOrder = ({ orderCustomers, setOrderCustomers, customers }: Props) =>
                                 id="worker"
                                 className={styles.radio}
                             />
-                            <label htmlFor={`${worker.name}`}>
-                                {worker.name} {worker.cpf}
+                            <label htmlFor="worker">
+                                {worker.cus_name} {worker.cus_cpf}
                             </label>
                         </div>
                     ))}
@@ -111,7 +111,7 @@ const WorkerOrder = ({ orderCustomers, setOrderCustomers, customers }: Props) =>
                     className={styles.selected}
                 >
                     {currentCustomer
-                        ? currentCustomer.name
+                        ? currentCustomer.cus_name
                         : "Selecione um cliente"}
 
                     <div className={styles.bottom}></div>
@@ -148,13 +148,13 @@ const WorkerOrder = ({ orderCustomers, setOrderCustomers, customers }: Props) =>
             <div className={styles.orderProducts}>
                 {orderCustomers.map((worker) => (
                     <div
-                        key={worker.id}
+                        key={worker.cus_id}
                         className={styles.boxProd}
                         onClick={() => {
                             removeWorkerFromOrder(worker);
                         }}
                     >
-                        <span>{worker.name}</span>
+                        <span>{worker.cus_name}</span>
                     </div>
                 ))}
             </div>

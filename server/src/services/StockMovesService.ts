@@ -24,7 +24,7 @@ class StockMovesService {
     async create({ 
         smo_desc = "venda",
         smo_pro_id,
-        smo_prov_id = null,
+        smo_prov_id,
         smo_quantity,
         smo_type = "o",
         smo_unit_price = 0
@@ -45,7 +45,6 @@ class StockMovesService {
         });
 
         await this.stockMovesRepository.save(stockMove);
-
 
         return stockMove;
     }

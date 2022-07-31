@@ -1,18 +1,21 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { IoMdTrash } from "react-icons/io";
+
 import styles from "./styles.module.scss";
 
 import PaymentModal from "../PaymentModal";
 
-import { OrderInfo } from "../../pages/orders";
-import { Installment } from "../../pages/orders";
+import { Sale } from "../../pages/orders";
+import { Payment } from "../../pages/orders";
 import RemoveModal from "../RemoveOrderModal";
+import { parseCookies } from "nookies";
+import { AuthContext } from "../../contexts/AuthContext";
 
 type Props = {
     showModal: boolean;
     setShowModal: Dispatch<SetStateAction<boolean>>;
-    currentOrder: OrderInfo;
-    ordersInfo: OrderInfo[];
+    currentOrder: Sale;
+    ordersInfo: Sale[];
 };
 
 const OrderModal = ({
@@ -23,22 +26,24 @@ const OrderModal = ({
 }: Props) => {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
-    const [currentInstallment, setCurrentInstallment] = useState<Installment>();
+    const [currentInstallment, setCurrentInstallment] = useState<Payment>();
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const handleInstallment = (ins: Installment, index: number) => {
+    const { user } = useContext(AuthContext);
+
+
+    const handleInstallment = (ins: Payment, index: number) => {
         setCurrentInstallment(ins);
         setCurrentIndex(index);
         setShowPaymentModal(!showPaymentModal);
-        console.log(ordersInfo[0].workers);
     };
 
-    const sortDates = (date1: Installment, date2: Installment) => {
-        let newDate1 = date1.date.split('/').reverse().join('');
-        let newDate2 = date2.date.split('/').reverse().join('');
+    // const sortDates = (date1: Payment, date2: Payment) => {
+    //     let newDate1 = date1.pay_pending_date.split('/').reverse().join('');
+    //     let newDate2 = date2.pay_pending_date.split('/').reverse().join('');
 
-        return newDate1 > newDate2 ? 1 : newDate1 < newDate2 ? -1 : 0;
-    };
+    //     return newDate1 > newDate2 ? 1 : newDate1 < newDate2 ? -1 : 0;
+    // };
 
     return (
         <>
@@ -63,28 +68,28 @@ const OrderModal = ({
                                 <table className={styles.products}>
                                     <thead>
                                         <tr>
-                                            <th>Modelo</th>
+                                            <th>Descrição</th>
                                             <th>Quantidade</th>
                                             <th>Preço</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {currentOrder.products.map(
+                                        {currentOrder.saleProducts!.map(
                                             (product) => (
-                                                <tr key={product.id}>
-                                                    <td>{product.name}</td>
+                                                <tr key={product.spr_id}>
+                                                    <td>{product.product!.pro_desc}</td>
                                                     <td
                                                         className={
                                                             styles.quantity
                                                         }
                                                     >
-                                                        {product.quantity}
+                                                        {product.spr_quantity}
                                                     </td>
                                                     <td>
                                                         R${" "}
-                                                        {product.price.toFixed(
-                                                            2
-                                                        )}
+                                                        {
+                                                            `${(product.product!.pro_unit_price * product.spr_quantity).toFixed(2)}`
+                                                        }
                                                     </td>
                                                 </tr>
                                             )
@@ -94,27 +99,23 @@ const OrderModal = ({
                                 <table className={styles.workers}>
                                     <thead>
                                         <tr>
-                                            <th>Funcionário</th>
+                                            <th>Colaborador</th>
                                             <th>Cargo</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {currentOrder.workers.map((worker) =>
-                                            worker.name ? (
-                                                <tr key={worker.id}>
-                                                    <td>{worker.name}</td>
-                                                    <td>{worker.occupation}</td>
-                                                </tr>
-                                            ) : undefined
-                                        )}
+                                        <tr>
+                                            <td>{currentOrder.collaborator!.col_name}</td>
+                                            <td>{currentOrder.collaborator!.col_function}</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                             <div className={styles.info}>
                                 <div className={styles.container}>
                                     <strong>Status do pagamento</strong>
-                                    {currentOrder.installment
-                                        .map((ins) => ins.status)
+                                    {currentOrder.payments!
+                                        .map((ins) => ins.pay_status)
                                         .includes(false) ? (
                                         <strong className={styles.pending}>
                                             PENDENTE
@@ -127,31 +128,30 @@ const OrderModal = ({
                                 </div>
                                 <div className={styles.container}>
                                     <strong>Pagamento</strong>
-                                    <span>{currentOrder.payment}</span>
+                                    <span>{currentOrder.payments!.length > 1 ? "Sinal e Resto" : "Total"}</span>
                                 </div>
                                 <div className={styles.container}>
                                     <strong>Tipo de pagamento</strong>
                                     <span>
-                                        {currentOrder.installment.length > 1
-                                            ? "parcelado"
-                                            : "à vista"}
+                                        {currentOrder.payments![0].pay_type_of_payment}
                                     </span>
                                 </div>
                                 <div className={styles.container}>
-                                    <strong>Valor da parcela</strong>
+                                    <strong>Valor do Sinal</strong>
                                     <span>
-                                        {`${
-                                            currentOrder.installment.length
-                                        }x de R$ ${currentOrder.installment[0].price
-                                            .toFixed(2)
-                                            .replace(".", ",")}`}
+                                        {
+                                            currentOrder.payments![0].pay_desc == "Sinal" ?
+                                                `R$ ${currentOrder.payments![0].pay_value.toFixed(2)}`
+                                                : "0"
+                                        }
                                     </span>
                                 </div>
+
                                 <div className={styles.container}>
                                     <strong>Valor total:</strong>
                                     <span>
                                         R${" "}
-                                        {currentOrder.fullPrice
+                                        {currentOrder.fullPrice!
                                             .toFixed(2)
                                             .replace(".", ",")}
                                     </span>
@@ -161,13 +161,12 @@ const OrderModal = ({
                                     <strong>Parcelas</strong>
 
                                     <div className={styles.boxContainer}>
-                                        {currentOrder.installment
-                                            .sort(sortDates)
+                                        {currentOrder.payments!
                                             .map((ins, index) => (
                                                 <div
-                                                    key={ins.id}
+                                                    key={ins.pay_id}
                                                     className={
-                                                        ins.status
+                                                        ins.pay_status
                                                             ? `${styles.box} ${styles.insPaid}`
                                                             : `${styles.box} ${styles.insPending}`
                                                     }
@@ -185,7 +184,10 @@ const OrderModal = ({
                                                             styles.tooltip
                                                         }
                                                     >
-                                                        {ins.date}
+                                                        {ins.pay_status ?
+                                                            ins.pay_date
+                                                            : ins.pay_pending_date
+                                                        }
                                                     </div>
                                                 </div>
                                             ))}
@@ -196,18 +198,23 @@ const OrderModal = ({
                                     </span>
                                 </div>
 
-                                <div className={styles.button}>
-                                    <button
-                                        onClick={() => {
-                                            setShowRemoveModal(
-                                                !showRemoveModal
-                                            );
-                                        }}
-                                    >
-                                        Remover venda
-                                        <IoMdTrash className={styles.icon} />
-                                    </button>
-                                </div>
+                                {
+                                    user?.user_is_admin ?
+                                        (
+                                            <div className={styles.button}>
+                                                <button
+                                                    onClick={() => {
+                                                        setShowRemoveModal(
+                                                            !showRemoveModal
+                                                        );
+                                                    }}
+                                                >
+                                                    Desativar Venda
+                                                    <IoMdTrash className={styles.icon} />
+                                                </button>
+                                            </div>
+                                        ) : ""
+                                }
                             </div>
                         </div>
                     </div>

@@ -29,6 +29,18 @@ class EyeInfoController {
         }
     }
 
+    async getEyeInfo(req: Request, res: Response) {
+        const eyeInfoService = new EyeInfoService();
+        
+        try {
+            const eyeInfos = await eyeInfoService.getEyeInfo();
+
+            return res.status(200).json(eyeInfos);
+        } catch (err) {
+            return res.status(400).json({ message: err.message });
+        }
+    }
+
     async getEyeInfoByDoctorPrescriptionId(req: Request, res: Response) {
         const { id } = req.params;
 

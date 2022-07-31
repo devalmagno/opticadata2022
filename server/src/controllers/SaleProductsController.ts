@@ -25,6 +25,18 @@ class SaleProductsController {
         }
     }
 
+    async getSaleProducts(req: Request, res: Response) {
+        const salesProductService = new SaleProductsService();
+
+        try {
+            const saleProducts = await salesProductService.getSaleProcuts();
+
+            return res.status(200).json(saleProducts);
+        } catch(err) {
+            return res.status(400).json({ message: err.message });
+        }
+    }
+
     async getSaleProductBySaleId(req: Request, res: Response) {
         const { id } = req.params;
 

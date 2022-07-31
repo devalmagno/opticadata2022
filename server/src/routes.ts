@@ -49,6 +49,8 @@ const eyeInfoContrller = new EyeInfoController();
 const salesController = new SalesController();
 const saleProductsController = new SaleProductsController();
 
+// Route to create Admin First Use User
+
 // Routes for Settings
 routes.post("/settings/create", settingsController.create);
 routes.get("/settings/", settingsController.getSettings);
@@ -57,6 +59,7 @@ routes.get("/settings/", settingsController.getSettings);
 routes.post("/collaborators/create", collaboratorsController.create);
 routes.get("/collaborators/", collaboratorsController.getCollaborators);
 routes.get("/collaborators/:id", collaboratorsController.getCollaboratorById);
+routes.get("/collaborators/cpf/:cpf", collaboratorsController.getCollaboratorByCPF);
 routes.put("/collaborators/:id", collaboratorsController.updateCollaborator);
 routes.delete("/collaborators/:id", collaboratorsController.deleteCollaborator);
 
@@ -70,40 +73,19 @@ routes.get("/users/", usersController.get);
 routes.get("/users/:id", usersController.getById);
 routes.put("/users/:id", usersController.update);
 routes.put("/users/pass/:id", usersController.updatePassword);
-routes.post("/users/:id", usersController.login);
+routes.post("/users/login/", usersController.login);
+routes.post("/token", usersController.authenticateToken);
 
 // Routes for Cashiers
 routes.post("/cashiers/create", cashiersController.create);
 routes.get("/cashiers/", cashiersController.getCashiers);
+routes.get("/cashiers/:id", cashiersController.getCashierById);
+routes.put("/cashiers/:id", cashiersController.closeCashier);
 
 // Routes for Cashier Moves
-routes.post("/cashiers/moves/create", cashierMovesController.create);
-routes.get("/cashiers/moves", cashierMovesController.get);
-routes.get("/cashiers/moves/:id", cashierMovesController.getCashierMovesByCashierId);
-
-// Routes for Managers
-routes.post("/managers/register", managersController.create);
-routes.post("/managers/login", managersController.login);
-routes.post("/managers/token", managersController.authenticateToken);
-routes.get("/managers/", managersController.getAllManagers);
-routes.put("/managers/:id", managersController.updateManager);
-routes.put("/managers/password/:id", managersController.changePassword);
-routes.delete("/managers/:id", managersController.remove);
-
-// Routes for Occupations
-routes.post("/occupations/register",  occupationsController.create);
-routes.get("/occupations/",  occupationsController.getOccupations);
-routes.put("/occupations/:id",  occupationsController.updateOccupation);
-routes.delete("/occupations/:id",  occupationsController.removeOccupation);
-
-// Routes for Workers
-routes.post("/workers/register", workersController.create);
-routes.post("/workers/login", workersController.login);
-routes.get("/workers/", workersController.getWorkers);
-routes.put("/workers/:id", workersController.updateWorker);
-routes.put("/workers/occupation/:id", workersController.changeWorkerOccupation);
-routes.put("/workers/password/:id", workersController.changePassword);
-routes.delete("/workers/:id", managersController.authorizationReq, workersController.removeWorker);
+routes.post("/cashiermoves/create", cashierMovesController.create);
+routes.get("/cashiermoves", cashierMovesController.get);
+routes.get("/cashiermoves/:id", cashierMovesController.getCashierMovesByCashierId);
 
 // Routes for Customers
 routes.post("/customers/create", customersController.create);
@@ -135,7 +117,7 @@ routes.delete("/providers/:id", providersController.removeProvider);
 // Routes for Stock
 routes.post("/stocks/create", stockController.create);
 routes.get("/stocks", stockController.getStocks);
-routes.get("/stock/product", stockController.getStocksByProduct);
+routes.get("/stock/product/:id", stockController.getStocksByProduct);
 routes.put("/stock/:id", stockController.updateStockMinOrMax);
 
 // Routes for Stock Moves
@@ -145,17 +127,20 @@ routes.get("/stockmoves/:id", stockMovesController.getStocksByStockId);
 
 // Routes for Payments
 routes.post('/payments/create', paymentsController.create);
+routes.get('/payments/', paymentsController.getPayments);
 routes.get('/payments/sale/:id', paymentsController.getPaymentsBySaleId);
 routes.get('/payments/:id', paymentsController.getPaymentById);
 routes.put('/payments/:id', paymentsController.updatePaymentStatus);
 
 // Routes for Doctor Prescription
 routes.post('/doctorprescription/create', doctorPrescriptionController.create);
-routes.get('/doctorprescription/:id', doctorPrescriptionController.getDoctorPrescriptionBySaleId);
+routes.get('/doctorprescription/', doctorPrescriptionController.getDoctorPrescriptions);
+routes.get('/doctorprescription/:id', doctorPrescriptionController.getDoctorPrescriptionById);
 routes.put('/doctorprescription/:id', doctorPrescriptionController.update);
 
 // Routes for Eye Info
 routes.post('/eyeinfo/create', eyeInfoContrller.create);
+routes.get('/eyeinfo/', eyeInfoContrller.getEyeInfo);
 routes.get('/eyeinfo/:id', eyeInfoContrller.getEyeInfoByDoctorPrescriptionId);
 routes.put('/eyeinfo/:id', eyeInfoContrller.update);
 
@@ -170,6 +155,7 @@ routes.put('/sales/status/:id', salesController.updateSaleStatus);
 
 // Routes for Sale Products
 routes.post('/saleproducts/create', saleProductsController.create);
+routes.get('/saleproducts/', saleProductsController.getSaleProducts);
 routes.get('/saleproducts/sale/:id', saleProductsController.getSaleProductBySaleId);
 routes.get('/saleproducts/product/:id', saleProductsController.getSaleByProductId);
 

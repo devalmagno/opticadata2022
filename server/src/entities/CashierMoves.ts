@@ -9,7 +9,7 @@ class CashierMoves {
     @PrimaryColumn()
     cmo_id: string;
 
-    @JoinColumn({ name: "cas_col_id" })
+    @JoinColumn({ name: "cmo_cas_id" })
     @ManyToOne(() => Cashier)
     cashiers: Cashier;
 

@@ -28,6 +28,8 @@ class CashiersController {
     }
 
     async getCashiers(req: Request, res: Response) {
+        const { id } = req.params;
+
         const cashiersService = new CashiersService();
 
         try {
@@ -38,6 +40,35 @@ class CashiersController {
             res.status(400).json({ message: err.message });
         }
     }
+
+    async getCashierById(req: Request, res: Response) {
+        const { id } = req.params;
+
+        const cashiersService = new CashiersService();
+
+        try {
+            const cashiers = await cashiersService.getCashierById(id);
+
+            return res.status(200).json(cashiers);
+        } catch (err) {
+            res.status(400).json({ message: err.message });
+        }
+    }
+
+    async closeCashier(req: Request, res: Response) {
+        const { id } = req.params;
+
+        const cashiersService = new CashiersService();
+
+        try {
+            const cashiers = await cashiersService.closeCashier(id);
+
+            return res.status(200).json(cashiers);
+        } catch (err) {
+            res.status(400).json({ message: err.message });
+        }
+    }
+
 }
 
 export { CashiersController };

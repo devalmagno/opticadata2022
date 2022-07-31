@@ -23,7 +23,7 @@ class StockService {
         sto_pro_id,
         sto_quantity
     }: IStock) {
-        const stockAlreadyExists = await this.stockRepository.find({
+        const stockAlreadyExists = await this.stockRepository.findOne({
             where: { sto_pro_id }
         });
 
@@ -66,8 +66,8 @@ class StockService {
 
         let sto_quantity = stock.sto_quantity;
 
-        if (operationType == '+') sto_quantity += quantity; 
-        if (operationType == '-') sto_quantity -= quantity; 
+        if (operationType == 'E') sto_quantity += quantity; 
+        if (operationType == 'S') sto_quantity -= quantity; 
 
         if (sto_quantity > stock.sto_max || sto_quantity < stock.sto_min)
             throw new Error(`The quantity in stock must be between ${stock.sto_min}...${stock.sto_max}.`);

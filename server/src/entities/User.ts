@@ -17,6 +17,9 @@ class User {
     user_col_id: string;
 
     @Column()
+    user_cpf: string;
+
+    @Column()
     user_password: string;
 
     @Column()

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { MdAddShoppingCart } from "react-icons/md";
 
 import Loading from "../Loading";
@@ -7,17 +7,12 @@ import WorkerOrder from "../WorkerOrder";
 import CustomerOrder from "../CustomerOrder";
 
 import { useFetch } from "../../hooks/useFetch";
+import { api } from "../../services/api";
 
 import styles from "./styles.module.scss";
 import PaymentOrder from "../PaymentOrder";
-import { api } from "../../services/api";
 
-export type Product = {
-    id: string;
-    name: string;
-    unit_price: number;
-    quantity: number;
-};
+import { Product, Customer, SaleProduct, Payment } from "../../pages/orders";
 
 export type Worker = {
     id: string;
@@ -32,174 +27,139 @@ export type Worker = {
     sales: number;
 };
 
-export type Customer = {
-    id: string;
-    cpf: string;
-    cnpj: string;
-    name: string;
-    email: string;
-    phone: string;
+type Props = {
+    showSideBar: boolean;
+    setShowSideBar: Dispatch<SetStateAction<boolean>>;
 };
 
-export type Payment = {
-    type_of_payment: string;
-    payment_date: Date[];
-};
+const OrderSidebar = ({
+    setShowSideBar,
+    showSideBar
+}: Props) => {
 
-const OrderSidebar = () => {
-    const [showSidebar, setShowSidebar] = useState(false);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [customers, setCustomers] = useState<Customer[]>([]);
 
-    const [orderProducts, setOrderProducts] = useState<Product[]>([]);
-    const [orderWorkers, setOrderWorkers] = useState<Worker[]>([]);
-    const [orderCustomers, setOrderCustomers] = useState<Customer[]>([]);
-    const [orderPayment, setOrderPayment] = useState<Payment>({
-        type_of_payment: "Dinheiro",
-        payment_date: [],
-    });
+    const [saleProducts, setSaleProducts] = useState<SaleProduct[]>([]);
+    const [orderCustomer, setOrderCustomer] = useState<Customer>();
+    const [orderPayment, setOrderPayment] = useState<Payment[]>([]);
 
-    const { data: products } = useFetch<Product[]>("/products");
-    const { data: workers } = useFetch<Worker[]>("/workers");
-    const { data: customers } = useFetch<Customer[]>("/customers");
+    useEffect(() => {
+        api.get('/products')
+            .then(res => {
+                setProducts(res.data);
+            })
+            .catch(err => console.log(err));
 
-    if (!products || !workers || !customers) return <Loading />;
+        api.get('/customers')
+            .then(res => {
+                setCustomers(res.data);
+            })
+            .catch(err => console.log(err));
+    }, []);
 
     let price = 0;
-    let perInstallment = 0;
-
-    orderProducts.forEach((prod) => {
-        price += prod.unit_price * prod.quantity;
-    });
-
-    if (price > 0 && orderPayment.payment_date.length > 1) {
-        perInstallment = price / orderPayment.payment_date.length;
-    } 
 
     const handleCreateNewOrder = () => {
-        const products_id = orderProducts.map((prod) => prod.id);
-        const workers_id = orderWorkers.map((worker) => worker.id);
-        const customer_id =
-            orderCustomers[0] != null ? orderCustomers[0].id : null;
-        const payment_date = formatedDate(orderPayment.payment_date);
-        const quantity = orderProducts.map((prod) => prod.quantity);
+        // const products_id = orderProducts.map((prod) => prod.id);
+        // const workers_id = orderWorkers.map((worker) => worker.id);
+        // const customer_id =
+        //     orderCustomers[0] != null ? orderCustomers[0].id : null;
+        // const payment_date = formatedDate(orderPayment.payment_date);
+        // const quantity = orderProducts.map((prod) => prod.quantity);
 
-        api.post("/orders", {
-            products_id,
-            workers_id,
-            customer_id,
-            payment_date,
-            price,
-            quantity,
-            type_of_payment: orderPayment.type_of_payment,
-        })
-            .then(() => {
-                alert("Registro de ordem feito com sucesso");
-            })
-            .catch((err) => {
-                console.log(err.message);
-            });
+        // api.post("/orders", {
+        //     products_id,
+        //     workers_id,
+        //     customer_id,
+        //     payment_date,
+        //     price,
+        //     quantity,
+        //     type_of_payment: orderPayment.type_of_payment,
+        // })
+        //     .then(() => {
+        //         alert("Registro de ordem feito com sucesso");
+        //     })
+        //     .catch((err) => {
+        //         console.log(err.message);
+        //     });
 
-        setOrderProducts([]);
-        setOrderWorkers([]);
-        setOrderCustomers([]);
-        setOrderPayment({
-            type_of_payment: "Dinheiro",
-            payment_date: [],
-        });
-        setShowSidebar(!showSidebar);
+        // setOrderProducts([]);
+        // setOrderWorkers([]);
+        // setOrderCustomers([]);
+        // setOrderPayment({
+        //     type_of_payment: "Dinheiro",
+        //     payment_date: [],
+        // });
+        // setShowSidebar(!showSidebar);
     };
 
     return (
-        <>
-            {showSidebar ? (
+        <div
+            className={
+                styles.sidebar
+            }
+        >
+            <header>
+                <h3>Registrar venda</h3>
+
                 <div
-                    className={
-                        showSidebar
-                            ? styles.sidebar
-                            : `${styles.sidebar} ${styles.disabled}`
-                    }
+                    onClick={() => {
+                        setShowSideBar(!showSideBar);
+                    }}
+                    className={styles.icon}
                 >
-                    <header>
-                        <h3>Registrar venda</h3>
+                    <MdAddShoppingCart />
+                </div>
+            </header>
 
-                        <div
-                            onClick={() => {
-                                setShowSidebar(!showSidebar);
-                            }}
-                            className={styles.icon}
-                        >
-                            <MdAddShoppingCart />
-                        </div>
-                    </header>
+            <div className={styles.container}>
+                <ProductOrder
+                    products={products}
+                    orderProducts={saleProducts}
+                    setOrderProducts={setSaleProducts}
+                />
 
-                    <div className={styles.container}>
-                        <ProductOrder
-                            products={products}
-                            orderProducts={orderProducts}
-                            setOrderProducts={setOrderProducts}
-                        />
+                <CustomerOrder
+                    customers={customers}
+                    orderCustomers={customers}
+                    setOrderCustomers={setCustomers}
+                />
 
-                        <WorkerOrder
-                            workers={workers}
-                            orderWorkers={orderWorkers}
-                            setOrderWorkers={setOrderWorkers}
-                        />
+                <PaymentOrder
+                    orderPayment={orderPayment}
+                    setOrderPayment={setOrderPayment}
+                    customer={customers}
+                />
 
-                        <CustomerOrder
-                            customers={customers}
-                            orderCustomers={orderCustomers}
-                            setOrderCustomers={setOrderCustomers}
-                        />
+                <div style={price == 0 ? { display: "none" } : { display: "block" }}>
+                    <strong>Preço total: </strong>
+                    <span>R$ {price.toFixed(2)}</span>
+                </div>
 
-                        <PaymentOrder
-                            orderPayment={orderPayment}
-                            setOrderPayment={setOrderPayment}
-                            customer={orderCustomers}
-                        />
-
-                        <div style={price == 0 ? {display: "none"} : {display: "block"} }>
-                            <strong>Preço total: </strong>
-                            <span>R$ {price.toFixed(2)}</span>
-                        </div>
-
-                        <div style={perInstallment == 0? {display: "none"} : {display: "block"}}>
+                {/* <div style={perInstallment == 0? {display: "none"} : {display: "block"}}>
                             <strong>Preço por parcela: </strong>
                             <span>{orderPayment.payment_date.length}x de R$ {perInstallment.toFixed(2)}</span>
                         </div>
-
-                        <div
-                            className={
-                                orderProducts.length != 0 &&
-                                orderWorkers.length != 0 &&
-                                orderPayment.payment_date.length != 0
-                                    ? styles.button
-                                    : `${styles.button} ${styles.disabled}`
-                            }
-                        >
-                            <button
-                                disabled={orderPayment.payment_date.length == 0}
-                                onClick={handleCreateNewOrder}
-                            >
-                                Confirmar venda
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            ) : (
+ */}
                 <div
-                    onClick={() => {
-                        setShowSidebar(!showSidebar);
-                    }}
                     className={
-                        !showSidebar
-                            ? `${styles.opensidebar} ${styles.closesidebar}`
-                            : `${styles.opensidebar} ${styles.active}`
+                        // orderProducts.length != 0 &&
+                        // orderWorkers.length != 0 &&
+                        // orderPayment.payment_date.length != 0
+                        // ? styles.button
+                        `${styles.button} ${styles.disabled}`
                     }
                 >
-                    <strong>Fazer uma venda</strong>
-                    <MdAddShoppingCart color="var(--bg-secondary)"/>
+                    <button
+                        disabled={true}
+                        onClick={handleCreateNewOrder}
+                    >
+                        Confirmar venda
+                    </button>
                 </div>
-            )}
-        </>
+            </div>
+        </div>
     );
 };
 

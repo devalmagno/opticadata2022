@@ -1,6 +1,6 @@
 import {MigrationInterface, QueryRunner, Table} from "typeorm";
 
-export class CreatePayment1635619217816 implements MigrationInterface {
+export class CreatePayments1659129587144 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
@@ -27,10 +27,7 @@ export class CreatePayment1635619217816 implements MigrationInterface {
                     },
                     {
                         name: "pay_value",
-                        type: "decimal",
-                        precision: 5,
-                        scale: 2,
-                        default: 0
+                        type: "float",
                     },
                     {
                         name: "pay_status",
@@ -75,3 +72,4 @@ export class CreatePayment1635619217816 implements MigrationInterface {
     }
 
 }
+

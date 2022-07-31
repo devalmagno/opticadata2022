@@ -51,7 +51,7 @@ class SalesService {
 
     async getSalesByCustomerId(sal_cus_id: string) {
         const sales = await this.salesRepository.find({
-            where: sal_cus_id
+            where: { sal_cus_id }
         });
 
         if (!sales) throw new Error("There is no sale in the database.");
@@ -61,7 +61,7 @@ class SalesService {
 
     async getSalesByCollaboratorId(sal_col_id: string) {
         const sales = await this.salesRepository.find({
-            where: sal_col_id
+            where: { sal_col_id }
         });
 
         if (!sales) throw new Error("There is no sale in the database.");
@@ -71,7 +71,7 @@ class SalesService {
 
     async getSalesByDoctorPrescriptionId(sal_dpr_id: string) {
         const sales = await this.salesRepository.find({
-            where: sal_dpr_id
+            where: { sal_dpr_id }
         });
 
         if (!sales) throw new Error("There is no sale in the database.");

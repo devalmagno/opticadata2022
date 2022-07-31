@@ -32,9 +32,17 @@ class SaleProductsService {
         return saleProduct;
     }
 
+    async getSaleProcuts() {
+        const saleProducts = await this.saleProductsRepository.find();
+
+        if (!saleProducts) throw new Error("There is no sale product in the database.");
+
+        return saleProducts;
+    }
+
     async getSaleProcutsBySaleId(spr_sal_id: string) {
         const saleProducts = await this.saleProductsRepository.find({
-            where: spr_sal_id
+            where: { spr_sal_id }
         });
 
         if (!saleProducts) throw new Error("There is no sale product in the database.");

@@ -50,6 +50,20 @@ class CollaboratorsController {
         }
     }
 
+    async getCollaboratorByCPF(req: Request, res: Response) {
+        const { cpf } = req.params;
+        const collaboratorsService = new CollaboratorsService();
+
+        try {
+            const collaborator = await collaboratorsService.getCollaboratorByCPF(cpf);
+
+            return res.status(200).json(collaborator);
+        } catch (err) {
+            res.status(400).json({ message: err.message });
+        }
+    }
+
+
     async updateCollaborator(req: Request, res: Response) {
         const { id } = req.params;
         const { col_function, col_name } = req.body;

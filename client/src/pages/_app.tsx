@@ -20,7 +20,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                         <Sidebar />
                         <main>
                             <Component {...pageProps} />
-                            <OrderSidebar />                            
+                            {/* <OrderSidebar />                             */}
                         </main>
                     </div>
                 )

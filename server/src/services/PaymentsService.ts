@@ -38,9 +38,17 @@ class PaymentsService {
         return payment;
     }
 
+    async getPayments() {
+        const payments = await this.paymentsRepository.find();
+
+        if (!payments) throw new Error("There is no payment in the database");
+
+        return payments;
+    }
+
     async getPaymentsBySaleId(pay_sal_id: string) {
         const payments = await this.paymentsRepository.find({
-            where: pay_sal_id
+            where: { pay_sal_id }
         });
 
         if (!payments) throw new Error("There is no payment in the database");

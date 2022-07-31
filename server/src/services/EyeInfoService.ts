@@ -38,9 +38,19 @@ class EyeInfoService {
         return eyeInfo;
     }
 
+    async getEyeInfo() {
+        const eyeInfo = await this.eyeInfoRepository.find();
+
+        if (!eyeInfo) {
+            throw new Error("Eye info do not exists!!");
+        }
+
+        return eyeInfo;
+    }
+
     async getEyeInfoByDoctorPrescriptionId(ein_dpr_id: string) {
         const eyeInfo = await this.eyeInfoRepository.find({
-            where: ein_dpr_id
+            where: { ein_dpr_id }
         });
 
         if (!eyeInfo) {

@@ -41,10 +41,16 @@ class DoctorPrescriptionService {
         return doctorPrescription;
     }
 
-    async getDoctorPrescriptionBySaleId(dpr_sal_id: string) {
-        const doctorPrescription = await this.doctorPrescriptionRepository.find({
-            where: dpr_sal_id,
-        });
+    async getDoctorPrescriptions() {
+        const doctorPrescriptions = await this.doctorPrescriptionRepository.find();
+
+        if (!doctorPrescriptions) throw new Error("There is no doctor prescription registered in the database.");
+
+        return doctorPrescriptions;
+    }
+
+    async getDoctorPrescriptionById(dpr_id: string) {
+        const doctorPrescription = await this.doctorPrescriptionRepository.findOne(dpr_id);
 
         if (!doctorPrescription) throw new Error("There is no doctor prescription registered in the database.");
 

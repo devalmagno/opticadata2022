@@ -1,6 +1,6 @@
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 
-import { Installment } from "../../pages/orders";
+import { Payment } from "../../pages/orders";
 import { api } from "../../services/api";
 
 import styles from "./styles.module.scss";
@@ -8,7 +8,7 @@ import styles from "./styles.module.scss";
 type Props = {
     showModal: boolean;
     setShowModal: Dispatch<SetStateAction<boolean>>;
-    installment: Installment;
+    installment: Payment;
     index: number;
 };
 
@@ -23,30 +23,12 @@ const PaymentModal = ({
     const handlePayment = async (e: FormEvent) => {
         e.preventDefault();
 
-        if (installment.status) {
-            installment.status = false;
-
-            try {
-                api.put(`/installments/${installment.id}`, {
-                    status: false,
-                }).then(() => {
-                    setShowModal(!showModal);
-                });
-            } catch (err) {
-                alert("Não foi possível.");
-            }
-        } else {
-            installment.status = true;
-
-            try {
-                api.put(`/installments/${installment.id}`, {
-                    status: true,
-                }).then(() => {
-                    setShowModal(!showModal);
-                });
-            } catch (err) {
-                alert("Não foi possível.");
-            }
+        try {
+            api.put(`/payments/${installment.pay_id}`).then(() => {
+                setShowModal(!showModal);
+            });
+        } catch (err) {
+            alert("Não foi possível.");
         }
     };
 
@@ -54,25 +36,24 @@ const PaymentModal = ({
         <>
             {showModal && (
                 <div className={styles.bg_modal}>
-                    <div className={installment.status ? `${styles.content} ${styles.cancel}` : styles.content}>
+                    <div className={installment.pay_status ? `${styles.content} ${styles.cancel}` : styles.content}>
                         <h3>
-                            {installment.status
+                            {installment.pay_status
                                 ? `Registro de pagamento da ${index + 1}º parcela`
-                                : 
-                                `Registrar pagamento da ${
-                                      index + 1
-                                  }º parcela`
+                                :
+                                `Registrar pagamento da ${index + 1
+                                }º parcela`
                             }
                         </h3>
                         <div className={styles.field}>
                             <strong>Data agendada: </strong>
-                            <span>{installment.date}</span>
+                            <span>{installment.pay_pending_date}</span>
                         </div>
                         <div className={styles.field}>
                             <strong>Valor da parcela: </strong>
                             <span>
                                 R${" "}
-                                {installment.price.toFixed(2).replace(".", ",")}
+                                {installment.pay_value.toFixed(2).replace(".", ",")}
                             </span>
                         </div>
                         <form onSubmit={handlePayment}>
@@ -88,10 +69,10 @@ const PaymentModal = ({
                                 />
                                 <label htmlFor="payment"></label>
                                 <span>
-                                    {installment.status ? 
-                                    `Sim, tenho certeza que desejo cancelar o registro de pagamento desta parcela.`
-                                    :
-                                    `Sim, tenho certeza que desejo registrar o
+                                    {installment.pay_status ?
+                                        `Sim, tenho certeza que desejo cancelar o registro de pagamento desta parcela.`
+                                        :
+                                        `Sim, tenho certeza que desejo registrar o
                                     pagamento desta parcela.`
                                     }
                                 </span>
@@ -106,7 +87,7 @@ const PaymentModal = ({
                             >
                                 <input
                                     type="submit"
-                                    value={installment.status ? "Remover" : "Confirmar"}
+                                    value={installment.pay_status ? "Remover" : "Confirmar"}
                                     className={styles.buttonStyle}
                                 />
                                 <button

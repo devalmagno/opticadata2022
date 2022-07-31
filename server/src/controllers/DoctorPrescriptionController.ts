@@ -31,14 +31,27 @@ class DoctorPrescriptionController {
         }
     }
 
-    async getDoctorPrescriptionBySaleId(req: Request, res: Response) {
+    async getDoctorPrescriptions(req: Request, res: Response) {
+        const doctorPrescriptionService = new DoctorPrescriptionService();
+        
+        try {
+            const doctorPrescriptions = await doctorPrescriptionService
+                .getDoctorPrescriptions();
+
+            return res.status(200).json(doctorPrescriptions);
+        } catch (err) {
+            return res.status(400).json({ message: err.message });
+        }
+    }
+
+    async getDoctorPrescriptionById(req: Request, res: Response) {
         const { id } = req.params;
 
         const doctorPrescriptionService = new DoctorPrescriptionService();
         
         try {
             const doctorPrescription = await doctorPrescriptionService
-                .getDoctorPrescriptionBySaleId(id);
+                .getDoctorPrescriptionById(id);
 
             return res.status(200).json(doctorPrescription);
         } catch (err) {

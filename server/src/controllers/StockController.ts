@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { StockService } from "../services/StockService";
 
+import { StockService } from "../services/StockService";
+import { ProductsService } from "../services/ProductsService";
 
 class StockController {
     async create(req: Request, res: Response) {
@@ -29,6 +30,7 @@ class StockController {
 
     async getStocks(req: Request, res: Response) {
         const stockService = new StockService();
+        const productsService = new ProductsService();
 
         try {
             const stocks = await stockService.getStocks();

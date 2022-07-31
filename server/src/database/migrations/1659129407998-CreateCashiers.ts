@@ -1,6 +1,6 @@
 import {MigrationInterface, QueryRunner, Table} from "typeorm";
 
-export class CreateCashier1658872251640 implements MigrationInterface {
+export class CreateCashiers1659129407998 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
@@ -19,23 +19,17 @@ export class CreateCashier1658872251640 implements MigrationInterface {
                     },
                     {
                         name: "cas_initial_value",
-                        type: "decimal",
-                        precision: 5,
-                        scale: 2,
-                        default: 0
-                    },
+                        type: "float",
+                   },
                     {
                         name: "cas_final_value",
-                        type: "decimal",
-                        precision: 5,
-                        scale: 2,
-                        default: 0
+                        type: "float",
+                        isNullable: true
                     },
                     {
                         name: "cas_opened_at",
                         type: "timestamp",
-                        isNullable: true,
-                        default: null
+                        default: "now()"
                     },
                     {
                         name: "cas_closed_at",
@@ -74,3 +68,4 @@ export class CreateCashier1658872251640 implements MigrationInterface {
     }
 
 }
+

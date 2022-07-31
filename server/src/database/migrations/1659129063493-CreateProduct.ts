@@ -1,6 +1,6 @@
-import {MigrationInterface, QueryRunner, Table, TableForeignKey} from "typeorm";
+import {MigrationInterface, QueryRunner, Table} from "typeorm";
 
-export class CreateProduct1634264296144 implements MigrationInterface {
+export class CreateProduct1659129063493 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
@@ -24,10 +24,7 @@ export class CreateProduct1634264296144 implements MigrationInterface {
                     },
                     {
                         name: "pro_unit_price",
-                        type: "decimal",
-                        precision: 5,
-                        scale: 2,
-                        default: 0
+                        type: "float",
                     },
                     {
                         name: "pro_status",
@@ -54,3 +51,4 @@ export class CreateProduct1634264296144 implements MigrationInterface {
     }
 
 }
+

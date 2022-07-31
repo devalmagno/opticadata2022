@@ -1,10 +1,20 @@
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { parseCookies } from "nookies";
-import { FormEvent, KeyboardEvent, useContext, useRef, useState } from "react";
+import { FormEvent, KeyboardEvent, useContext, useEffect, useRef, useState } from "react";
+import Loading from "../components/Loading";
 import { AuthContext } from "../contexts/AuthContext";
+import { useFetch } from "../hooks/useFetch";
+import { api } from "../services/api";
 
 import styles from "../styles/login.module.scss";
+
+type Collaborator = {
+    col_id: string;
+    col_name: string;
+    col_cpf: string;
+    col_function: string;
+}
 
 const Home = () => {
     const cpfRef = useRef<HTMLInputElement>(null);
@@ -20,26 +30,26 @@ const Home = () => {
     const [password, setPassword] = useState('');
 
     const handleManager = () => {
-      setIsManager(!isManager);
+        setIsManager(!isManager);
     }
-    
+
     const handleCPFInput = (keyEvent: KeyboardEvent) => {
         if (keyEvent.key != 'Backspace' && keyEvent.key != 'Tab' && keyEvent.key != 'Enter') {
             if (!/\d/.test(keyEvent.key)) {
                 setIsWord(true);
                 return;
-            } 
-    
+            }
+
             setIsWord(false);
 
 
             if (cpfRef.current?.value.length == 3 || cpfRef.current?.value.length == 7) {
                 cpfRef.current.value += ".";
             }
-    
+
             if (cpfRef.current?.value.length == 11) {
                 cpfRef.current.value += "-";
-            }   
+            }
         }
     }
 
@@ -51,13 +61,11 @@ const Home = () => {
     const handleSignIn = async (e: FormEvent) => {
         e.preventDefault();
 
-        if (!isManager) return;
-
         try {
             setIsLoading(true);
 
-            await signIn({cpf, password});
-        } catch(err) {
+            await signIn({ cpf, password });
+        } catch (err) {
             setIsLoading(false);
 
             setError(true);
@@ -69,80 +77,73 @@ const Home = () => {
             <Head>
                 <title>Login | ÓpticoData</title>
             </Head>
-            
+
             <div className={styles.logo}>
                 <img src="/logoopticodata.svg" alt="OpticoData" />
             </div>
 
             <div className={styles.login}>
                 <h2>Bem vindo ao ÓpticoData</h2>
-                <div className={styles.user}>
-                    { isManager ? <h3>Gerente</h3> : <h3>Funcionario</h3> }
 
-                    Mudar para {' '}
-                    <strong onClick={handleManager}>
-                      { isManager ? 'Funcionário' : 'Gerente' }
-                    </strong>
-                </div>
                 <form onSubmit={handleSignIn}>
-                        <div className={`${styles.inputBox} ${styles.cpf}`}>
-                            <input
-                                ref={cpfRef}
-                                type="text"
-                                name="cpf"
-                                id="cpf"
-                                placeholder="CPF"
-                                pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
-                                autoComplete="off"
-                                maxLength={14}
-                                onKeyDown={keyEvent => handleCPFInput(keyEvent)}
-                                onChange={e => { setCpf(e.target.value) }}
-                                required
-                            />
+                    <div className={`${styles.inputBox} ${styles.cpf}`}>
+                        <input
+                            ref={cpfRef}
+                            type="text"
+                            name="cpf"
+                            id="cpf"
+                            placeholder="CPF"
+                            pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
+                            autoComplete="off"
+                            maxLength={14}
+                            onKeyDown={keyEvent => handleCPFInput(keyEvent)}
+                            onChange={e => { setCpf(e.target.value) }}
+                            required
+                        />
 
-                            {
-                                isWord &&
-                                (
-                                    <div className={`${styles.warning} ${styles.isword}`}>
-                                        <strong>Apenas números são permitidos.</strong>
-                                    </div>  
-                                )
-                            }
-                        </div>
-                        <div className={styles.inputBox}>
-                            <input
-                                type="password"
-                                name="password"
-                                id="password"
-                                placeholder="Senha"
-                                maxLength={40}
-                                onKeyDown={keyEvent => handleCapslock(keyEvent)}
-                                onChange={e => { setPassword(e.target.value) }}
-                                required
-                            />
-                            { 
-                                isCapsLockOn &&
-                                (
-                                    <div className={`${styles.warning} ${styles.capslock}`}>
-                                        <strong>CapsLock ativado</strong>
-                                    </div>      
-                                )
-                            }
+                        {
+                            isWord &&
+                            (
+                                <div className={`${styles.warning} ${styles.isword}`}>
+                                    <strong>Apenas números são permitidos.</strong>
+                                </div>
+                            )
+                        }
+                    </div>
+                    <div className={styles.inputBox}>
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            placeholder="Senha"
+                            maxLength={40}
+                            onKeyDown={keyEvent => handleCapslock(keyEvent)}
+                            onChange={e => { setPassword(e.target.value) }}
+                            required
+                        />
+                        {
+                            isCapsLockOn &&
+                            (
+                                <div className={`${styles.warning} ${styles.capslock}`}>
+                                    <strong>CapsLock ativado</strong>
+                                </div>
+                            )
+                        }
 
-{
-                                error &&
-                                (
-                                    <div className={`${styles.warning} ${styles.isword}`}>
-                                        <strong>CPF ou senha inválida.</strong>
-                                    </div>
-                                )
-                            }
-                        </div>
+                        {
+                            error &&
+                            (
+                                <div className={`${styles.warning} ${styles.isword}`}>
+                                    <strong>CPF ou senha inválida.</strong>
+                                </div>
+                            )
+                        }
+                    </div>
 
-                        <div className={`${styles.inputBox} ${styles.button}`}>
-                            <input type="submit" value="Entrar" />
-                        </div>
-                    </form>
+                    <div className={`${styles.inputBox} ${styles.button}`}>
+                        <input type="submit" value="Entrar" />
+                    </div>
+                </form>
             </div>
 
             <div className={styles.footer}>
@@ -161,7 +162,7 @@ const Home = () => {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const { 'opdauth.token': token } = parseCookies(ctx);
-    
+
     if (token) {
         return {
             redirect: {

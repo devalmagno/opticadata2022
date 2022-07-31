@@ -31,13 +31,12 @@ class SettingsService {
 
     async getSettings() {
         const settings = await this.settingsRepository.find();
-        console.log(settings);
 
         if (!settings) {
             throw new Error("There is no settings in the database, please create an worker before doing this operation.");
         }
 
-        return settings;
+        return settings[0];
     }
 }
 

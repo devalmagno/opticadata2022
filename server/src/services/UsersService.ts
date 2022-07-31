@@ -7,8 +7,15 @@ import { UserRepository } from "../repositories/UsersRepository";
 
 interface IUser {
     user_col_id: string;
+    user_cpf: string;
     user_password: string;
     user_is_admin: boolean;
+}
+
+interface Data {
+    user: IUser;
+    iot: number;
+    exp: number;
 }
 
 class UsersService {
@@ -18,7 +25,12 @@ class UsersService {
         this.usersRepository = getCustomRepository(UserRepository);
     }
 
-    async create({ user_col_id, user_is_admin, user_password }: IUser) {
+    async create({ 
+        user_col_id,
+        user_is_admin, 
+        user_password,
+        user_cpf,
+    }: IUser) {
         const userAlreadyExists = await this.usersRepository.findOne({
             user_col_id,
         });
@@ -30,7 +42,8 @@ class UsersService {
         const user = this.usersRepository.create({
             user_col_id,
             user_is_admin,
-            user_password: hashedPassword
+            user_password: hashedPassword,
+            user_cpf,
         });
 
         await this.usersRepository.save(user);
@@ -65,7 +78,7 @@ class UsersService {
 
     async getUserPasswordByColId(user_col_id: string) {
         const user = await this.usersRepository.findOne({
-            where: user_col_id,
+            where: { user_col_id },
             select: ["user_password"],
         });
 
@@ -111,7 +124,6 @@ class UsersService {
         }
 
         const user = await this.usersRepository.findOne({ user_col_id });
-        user.user_password = "";
 
         const acessToken = jwt.sign({user}, "" + process.env.ACESS_TOKEN_SECRET, { expiresIn: '90m' });
 
@@ -120,13 +132,14 @@ class UsersService {
 
     async updatePassword(user_id: string, password: string, newPassword: string) {
         const userPassword = await this.usersRepository.findOne({
-            where: user_id,
+            where: { user_id },
             select: ["user_password"]
         });
 
         if (!userPassword) {
             throw new Error("User does not exists!!");
         }
+
 
         const validate = await bcrypt.compare(password, userPassword.user_password);
 
@@ -147,7 +160,7 @@ class UsersService {
     }
 
     async authenticate(token: string) {
-        const user = jwt.verify(token, "" + process.env.ACESS_TOKEN_SECRET, (err, user) => {
+        const user: any = jwt.verify(token, "" + process.env.ACESS_TOKEN_SECRET, (err, user) => {
             if (err) throw new Error(err.message);
 
             return user;

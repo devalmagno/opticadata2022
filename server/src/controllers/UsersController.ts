@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import { UsersService } from "../services/UsersService";
+import { CollaboratorsService } from "../services/CollaboratorsService";
 
 class UsersController {
     async create(req: Request, res: Response) {
@@ -11,12 +12,16 @@ class UsersController {
         } = req.body;
 
         const usersService = new UsersService();
+        const collaboratorsService = new CollaboratorsService();
 
         try {
+            const collaborator = await collaboratorsService.getCollaboratorById(user_col_id);
+
             const user = await usersService.create({
-            user_col_id,
-            user_is_admin,
-            user_password 
+                user_col_id,
+                user_is_admin,
+                user_password,
+                user_cpf: collaborator.col_cpf,
             });
     
             return res.status(201).json(user);
@@ -96,14 +101,16 @@ class UsersController {
     }
 
     async login(req: Request, res: Response) {
-        const { id, password } = req.body;
+        const { cpf, password } = req.body;
         
         const usersService = new UsersService();
+        const collaboratorsService = new CollaboratorsService();
 
         try {
-            const acessToken = await usersService.login(id, password);
+            const collaborator = await collaboratorsService.getCollaboratorByCPF(cpf);
+            const { acessToken, user } = await usersService.login(collaborator.col_id, password);
 
-            return res.status(200).json({ acessToken: acessToken });
+            return res.status(200).json({ acessToken, user, collaborator });
         } catch (err) {
             return res.status(401).json({
                 message: err.message
@@ -112,19 +119,20 @@ class UsersController {
     }
 
     async authenticateToken(req: Request, res: Response, next: NextFunction) {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
+        const { token } = req.body;
 
         const usersService = new UsersService();
+        const collaboratorsService = new CollaboratorsService();
 
         if (token == null) return res.status(401).json({
             message: "Token is null"
         });
 
         try {
-            await usersService.authenticate(token);
+            const { user } = await usersService.authenticate(token);
+            const collaborator = await collaboratorsService.getCollaboratorById(user.user_col_id);
 
-            next();
+            return res.status(200).json({ user, collaborator });
         } catch(err) {
             res.status(401).json({ message: err.message });
         }

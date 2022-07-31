@@ -41,7 +41,7 @@ class CashierMovesService {
 
     async getCashierMovesByCasId(cmo_cas_id: string) {
         const cashierMoves = await this.cashierMovesRepository.find({
-            where: cmo_cas_id,
+            where: { cmo_cas_id },
         });
 
         if (!cashierMoves)

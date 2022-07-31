@@ -3,78 +3,64 @@ import { GetServerSideProps } from "next";
 import { BiEdit } from "react-icons/bi";
 
 import Header from "../components/Header";
-import RemoveWorkerModal from "../components/RemoveWorkerModal";
-import RemoveManagerModal from "../components/RemoveManagerModal";
-import WorkerForm from "../components/WorkerForm";
-import ManagerForm from "../components/ManagerForm";
+import RemoveCollaboratorModal from "../components/RemoveCollaboratorModal";
+import CollaboratorForm from "../components/CollaboratorForm";
 import EditOccupation from "../components/EditOccupation";
 import Loading from "../components/Loading";
 
 import { useFetch } from "../hooks/useFetch";
 
 import styles from "../styles/users.module.scss";
-import { useState } from "react";
-
-export type Manager = {
-    id: string;
-    name: string;
-    email: string;
-    cpf: string;
-    phone: string;
-    created_at: Date;
-    updated_at: Date;
-};
+import { useEffect, useState } from "react";
 
 type Occupation = {
     id: string;
     name: string;
 };
 
-export type Worker = {
-    id: string;
-    name: string;
-    email: string;
-    cpf: string;
-    phone: string;
-    occupation: Occupation;
-    sales: number;
-};
+type UserType = {
+    user_col_id: string;
+}
+
+export type Collaborator = {
+    col_id: string;
+    col_name: string;
+    col_cpf: string;
+    col_function: string;
+    isUser?: boolean;
+    created_at: Date;
+    updated_at: Date;
+}
 
 const Users = () => {
-    const [showCreateManagerModal, setShowCreateManagerModal] = useState(false);
-    const [showRemoveManagerModal, setShowRemoveManagerModal] = useState(false);
-    const [currentManager, setCurrentManager] = useState<Manager>();
-
-    const [showCreateWorkerModal, setShowCreateWorkerModal] = useState(false);
-    const [showRemoveWorkerModal, setShowRemoveWorkerModal] = useState(false);
-    const [currentWorker, setCurrentWorker] = useState<Worker>();
-
+    const [showCreateCollaboratorModal, setShowCreateCollaboratorModal] = useState(false);
+    const [showRemoveCollaboratorModal, setRemoveCollaboratorModal] = useState(false);
+    const [currentCollaborator, setCurrentCollaborator] = useState<Collaborator>();
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const [showEditOccupation, setShowEditOccupation] = useState(false);
 
-    const { data: managers } = useFetch<Manager[]>("/managers");
-    const { data: workers } = useFetch<Worker[]>("/workers");
-    if (!managers || !workers) return <Loading />
+    const { data: collaborators } = useFetch<Collaborator[]>("/collaborators");
+    const { data: users } = useFetch<UserType[]>("/users");
+    if (!collaborators || !users) return <Loading />
 
-    if (!showRemoveWorkerModal) document.body.style.overflow = "unset";
-    if (!showCreateWorkerModal) document.body.style.overflow = "unset";
-    if (!showCreateManagerModal) document.body.style.overflow = "unset";
+    collaborators.forEach(col => {
+        users.forEach(user => {
+            if (col.col_id == user.user_col_id) col.isUser = true;
+        });
+    });
 
-    const handleRemoveWorker = (worker: Worker, index: number) => {
-        setCurrentWorker(worker);
+    if (!showRemoveCollaboratorModal) document.body.style.overflow = "unset";
+    if (!showCreateCollaboratorModal) document.body.style.overflow = "unset";
+
+    const handleRemoveCollaborator = (collaborator: Collaborator, index: number) => {
+        setCurrentCollaborator(collaborator);
         setCurrentIndex(index);
-        setShowRemoveWorkerModal(!showRemoveWorkerModal);
+        setRemoveCollaboratorModal(!showRemoveCollaboratorModal);
     };
 
-    const handleRemoveManager = (manager: Manager, index: number) => {
-        setCurrentManager(manager);
-        setCurrentIndex(index);
-        setShowRemoveManagerModal(!showRemoveManagerModal);
-    };
-
-    const handleEditOccupation = (worker: Worker) => {
-        setCurrentWorker(worker);
+    const handleEditOccupation = (collaborator: Collaborator) => {
+        setCurrentCollaborator(collaborator);
         setShowEditOccupation(!showEditOccupation);
     };
 
@@ -88,12 +74,12 @@ const Users = () => {
                     <div className={styles.button}>
                         <button
                             onClick={() => {
-                                setShowCreateWorkerModal(
-                                    !showCreateWorkerModal
+                                setShowCreateCollaboratorModal(
+                                    !showCreateCollaboratorModal
                                 );
                             }}
                         >
-                            Adicionar funcionário
+                            Adicionar Colaborator
                         </button>
                     </div>
 
@@ -101,9 +87,8 @@ const Users = () => {
                         <thead>
                             <tr>
                                 <th>Nome</th>
-                                <th>Email</th>
                                 <th>CPF</th>
-                                <th>Telefone</th>
+                                <th>Usuário</th>
                                 <th>Vendas</th>
                                 <th>
                                     Cargo <BiEdit color="#110425" />
@@ -112,33 +97,25 @@ const Users = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {workers.map((worker, index) => (
-                                <tr key={worker.id}>
-                                    <td>{worker.name}</td>
-                                    <td>
-                                        <div className={styles.email}><span>{worker.email}</span></div>
-                                        <div className={styles.tooltip}>
-                                            <span>{worker.email}</span>
-                                        </div>
-                                    </td>
-                                    <td>{worker.cpf}</td>
-                                    <td>{worker.phone}</td>
-                                    <td>{worker.sales}</td>
+                            {collaborators.map((collaborator, index) => (
+                                <tr key={collaborator.col_id}>
+                                    <td>{collaborator.col_name}</td>
+                                    <td>{collaborator.col_cpf}</td>
+                                    <td>{collaborator.isUser ? 'Sim' : 'Não'}</td>
+                                    <td>0</td>
+                                    {/* <td>{worker.sales}</td> */}
                                     <td
                                         onClick={() => {
-                                            handleEditOccupation(worker);
+                                            handleEditOccupation(collaborator);
                                         }}
                                     >
-                                        {worker.occupation != null
-                                            ? worker.occupation.name
-                                            : "Adicionar cargo"}
                                         <div className={styles.tooltip}>
                                             <span>Editar</span>
                                         </div>
                                     </td>
                                     <td
                                         onClick={() => {
-                                            handleRemoveWorker(worker, index);
+                                            handleRemoveCollaborator(collaborator, index);
                                         }}
                                     >
                                         <div className={styles.box_close}>
@@ -152,102 +129,35 @@ const Users = () => {
                     </table>
                 </section>
 
-                <section className={styles.managers}>
-                    <h3>Gerentes</h3>
-
-                    <div className={styles.button}>
-                        <button
-                            onClick={() => {
-                                setShowCreateManagerModal(
-                                    !showCreateManagerModal
-                                );
-                            }}
-                        >
-                            Adicionar gerente
-                        </button>
-                    </div>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Email</th>
-                                <th>CPF</th>
-                                <th>Telefone</th>
-                                <th>Remover</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {managers.map((manager, index) => (
-                                <tr key={manager.id}>
-                                    <td>{manager.name}</td>
-                                    <td>{manager.email}</td>
-                                    <td>{manager.cpf}</td>
-                                    <td>{manager.phone}</td>
-                                    <td
-                                        onClick={() => {
-                                            handleRemoveManager(manager, index);
-                                        }}
-                                    >
-                                        <div className={styles.box_close}>
-                                            <div className={styles.close}></div>
-                                            <div className={styles.close}></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </section>
             </div>
 
-            {showRemoveWorkerModal ? (
-                <RemoveWorkerModal
-                    showModal={showRemoveWorkerModal}
-                    setShowModal={setShowRemoveWorkerModal}
-                    worker={currentWorker!}
+            {showRemoveCollaboratorModal ? (
+                <RemoveCollaboratorModal
+                    showModal={showRemoveCollaboratorModal}
+                    setShowModal={setRemoveCollaboratorModal}
+                    collaborator={currentCollaborator!}
                     index={currentIndex}
-                    workersArray={workers}
+                    collaborators={collaborators}
                 />
             ) : (
                 ""
             )}
 
-            {showRemoveManagerModal ? (
-                <RemoveManagerModal
-                    showModal={showRemoveManagerModal}
-                    setShowModal={setShowRemoveManagerModal}
-                    manager={currentManager!}
-                    index={currentIndex}
-                    managersArray={managers}
-                />
-            ) : (
-                ""
-            )}
-
-            {showCreateWorkerModal ? (
-                <WorkerForm
-                    showModal={showCreateWorkerModal}
-                    setShowModal={setShowCreateWorkerModal}
-                    workers={workers}
+            {showCreateCollaboratorModal ? (
+                <CollaboratorForm
+                    showModal={showCreateCollaboratorModal}
+                    setShowModal={setShowCreateCollaboratorModal}
+                    collaborators={collaborators}
                 />
             ) : undefined}
-
-            {showCreateManagerModal ? (
-                <ManagerForm
-                    showModal={showCreateManagerModal}
-                    setShowModal={setShowCreateManagerModal}
-                    managers={managers}
-                />
-            ) : undefined}
-
-            {showEditOccupation ? (
+           
+            {/* {showEditOccupation ? (
                 <EditOccupation
                     showModal={showEditOccupation}
                     setShowModal={setShowEditOccupation}
-                    worker={currentWorker!}
+                    worker={currentCollaborator}
                 />
-            ) : undefined}
+            ) : undefined} */}
         </div>
     );
 };

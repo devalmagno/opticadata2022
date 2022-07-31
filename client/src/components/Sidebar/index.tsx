@@ -2,6 +2,7 @@ import Link from "next/link";
 import Router from "next/router";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import { destroyCookie } from "nookies";
+import { MdAddShoppingCart } from "react-icons/md";
 
 import { BiGlassesAlt, BiUser, BiLogOut } from "react-icons/bi";
 import { IoGrid, IoBag, IoSettings } from "react-icons/io5";
@@ -12,6 +13,9 @@ import { AuthContext } from "../../contexts/AuthContext";
 
 import styles from "./styles.module.scss";
 import { api } from "../../services/api";
+import { useFetch } from "../../hooks/useFetch";
+import Loading from "../Loading";
+import OrderSidebar from "../OrderSidebar";
 
 type Props = {
     children: ReactNode;
@@ -26,23 +30,32 @@ type Settings = {
     updated_at: Date;
 }
 
+type Collaborator = {
+    col_id: string;
+    col_name: string;
+    col_cpf: string;
+    col_function: string;
+}
+
 const Sidebar = () => {
-    const { user } = useContext(AuthContext);
+    const { user, collaborator } = useContext(AuthContext);
+
     const [sideBar, setSideBar] = useState(false);
-    const [settings, setSettings] = useState<Settings>();
+    const [showOrderSidebar, setShowOrderSidebar] = useState(false);
+    const [settings, setSettings] = useState<Settings>()
+
+    useEffect(() => {
+        api.get('/settings')
+            .then(res => {
+                setSettings(res.data);
+            });
+    }, []);
 
     const handleLogOut = () => {
         destroyCookie(null, "opdauth.token");
 
         Router.push("/");
     };
-
-    useEffect(() => {
-        api.get("/settings")
-            .then(res => {
-                setSettings(res.data[0]);
-            })
-    }, []);
 
     return (
         <div
@@ -68,13 +81,13 @@ const Sidebar = () => {
             </div>
 
             {settings &&
-            (
-                <div className={styles.optics_settings}>
-                    <strong>{settings.optics_name}</strong>
-                    <span>{settings.optics_unit}</span>
-                </div>
-            )}
-            
+                (
+                    <div className={styles.optics_settings}>
+                        <strong>{settings.optics_name}</strong>
+                        <span>{settings.optics_unit}</span>
+                    </div>
+                )}
+
             <ul className={styles.nav_list}>
                 <li>
                     <Link href="/dashboard">
@@ -85,16 +98,21 @@ const Sidebar = () => {
                     </Link>
                     <span className={styles.tooltip}>Dashboard</span>
                 </li>
-                <li>
-                    <Link href="/users">
-                        <a href="#">
-                            <FaUser className={styles.icons} />
-                            <span className={styles.links_name}>Usuários</span>
-                        </a>
-                    </Link>
 
-                    <span className={styles.tooltip}>Usuários</span>
-                </li>
+                {user?.user_is_admin ? (
+                    <li>
+
+                        <Link href="/users">
+                            <a href="#">
+                                <FaUser className={styles.icons} />
+                                <span className={styles.links_name}>Usuários</span>
+                            </a>
+                        </Link>
+
+                        <span className={styles.tooltip}>Usuários</span>
+                    </li>
+                ) : ''}
+
                 <li>
                     <Link href="/orders">
                         <a>
@@ -105,33 +123,47 @@ const Sidebar = () => {
                     <span className={styles.tooltip}>Vendas</span>
                 </li>
                 <li>
-                    <a>
-                        <AiOutlineDropbox className={styles.icons} />
-                        <span className={styles.links_name}>Estoque</span>
-                    </a>
+                    <Link href="/stocks">
+                        <a>
+                            <AiOutlineDropbox className={styles.icons} />
+                            <span className={styles.links_name}>Estoque</span>
+                        </a>
+                    </Link>
                     <span className={styles.tooltip}>Estoque</span>
                 </li>
                 <li>
-                    <a href="#">
-                        <IoBag className={styles.icons} />
-                        <span className={styles.links_name}>
-                            Mercadorias e Produtos
-                        </span>
-                    </a>
+                    <Link href="/products">
+                        <a>
+                            <IoBag className={styles.icons} />
+                            <span className={styles.links_name}>
+                                Mercadorias e Produtos
+                            </span>
+                        </a>
+                    </Link>
                     <span className={styles.tooltip}>
                         Mercadorias e Produtos
                     </span>
                 </li>
+
+                {user?.user_is_admin ? (
+                    <li>
+                        <Link href="/settings">
+                            <a>
+                                <IoSettings className={styles.icons} />
+                                <span className={styles.links_name}>Configurações</span>
+                            </a>
+                        </Link>
+                        <span className={styles.tooltip}>Configurações</span>
+                    </li>
+                ) : ''}
+
                 <li>
-                    <Link href="/settings">
-                        <a>
-                            <IoSettings className={styles.icons} />
-                            <span className={styles.links_name}>Configurações</span>
-                        </a>
-                    </Link>
-                    <span className={styles.tooltip}>Configurações</span>
+                    <a onClick={() => { setShowOrderSidebar(!showOrderSidebar) }}>
+                        <MdAddShoppingCart className={styles.icons} />
+                        <span className={styles.links_name}>Fazer uma venda</span>
+                    </a>
+                    <span className={styles.tooltip}>Fazer uma venda</span>
                 </li>
- 
             </ul>
 
             <div className={styles.profile_content}>
@@ -139,8 +171,8 @@ const Sidebar = () => {
                     <div className={styles.profile_details}>
                         <BiUser className={styles.user} />
                         <div className={styles.name_job}>
-                            <div className={styles.name}>{user?.name}</div>
-                            <div className={styles.job}>Gerente</div>
+                            <div className={styles.name}>{collaborator?.col_name}</div>
+                            <div className={styles.job}>{collaborator?.col_function}</div>
                         </div>
                     </div>
 
@@ -151,6 +183,14 @@ const Sidebar = () => {
                     <span className={styles.tooltip}>Sair</span>
                 </div>
             </div>
+
+            {showOrderSidebar ?
+                <OrderSidebar
+                    showSideBar={showOrderSidebar}
+                    setShowSideBar={setShowOrderSidebar}
+                />
+                : ''
+            }
         </div>
     );
 };

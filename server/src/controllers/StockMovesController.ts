@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { StockMovesService } from "../services/StockMovesService";
 
+import { StockMovesService } from "../services/StockMovesService";
+import { StockService } from "../services/StockService";
 
 class StockMovesController {
     async create(req: Request, res: Response) {
@@ -14,9 +15,10 @@ class StockMovesController {
         } = req.body;
 
         const stockMovesService = new StockMovesService();
+        const stockService = new StockService();
 
         try {
-            const stock = await stockMovesService.create({
+            const stockMoves = await stockMovesService.create({
                 smo_desc,
                 smo_pro_id,
                 smo_prov_id,
@@ -24,8 +26,14 @@ class StockMovesController {
                 smo_type,
                 smo_unit_price                          
             });
+
+            await stockService.updateQuantityInStock(
+                stockMoves.smo_sto_id,
+                stockMoves.smo_quantity,
+                stockMoves.smo_type
+            )
         
-            return res.status(201).json(stock);
+            return res.status(201).json(stockMoves);
         } catch(err) {
             return res.status(401).json({ message: err.message });
         }

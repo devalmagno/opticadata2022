@@ -41,11 +41,8 @@ export class CreateStockMoves1658949726501 implements MigrationInterface {
                     },
                     {
                         name: "smo_unit_price",
-                        type: "decimal",
-                        precision: 5,
-                        scale: 2,
+                        type: "float",
                         default: 0,
-                        isNullable: true
                     },
                     {
                         name: "created_at",

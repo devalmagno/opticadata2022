@@ -29,10 +29,7 @@ export class CreateCashierMoves1658874358147 implements MigrationInterface {
                     },
                     {
                         name: "cmo_value",
-                        type: "decimal",
-                        precision: 5,
-                        scale: 2,
-                        default: 0
+                        type: "float",
                     },
                     {
                         name: "created_at",

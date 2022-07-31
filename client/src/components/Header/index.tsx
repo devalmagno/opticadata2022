@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaBell } from "react-icons/fa";
+import { AuthContext } from "../../contexts/AuthContext";
 import { useFetch } from "../../hooks/useFetch";
+import { Collaborator } from "../../pages/users";
 import { api } from "../../services/api";
+import OrderSidebar from "../OrderSidebar";
 
 import styles from "./styles.module.scss";
 
@@ -20,20 +23,30 @@ type Installments = {
 }
 
 export default function Header({ title }: Props) {
-    const [installments, setInstallments] = useState<Installments[]>([]);
+    const { user } = useContext(AuthContext);
+//    const [installments, setInstallments] = useState<Installments[]>([]);
     const [openBox, setOpenBox] = useState(false);
+    const [collaborator, setCollaborator] = useState<Collaborator>();
+
+    // useEffect(() => {
+    //     api.get(`/installments/${currentDate()}`)
+    //         .then(response => {
+    //             setInstallments(response.data);
+    //         })
+    // }, []);
 
     useEffect(() => {
-        api.get(`/installments/${currentDate()}`)
-            .then(response => {
-                setInstallments(response.data);
+        api.get(`/collaborators/${user?.user_col_id}`)
+            .then(res => {
+                setCollaborator(res.data);
             })
-    }, []);
+            .catch(err => console.log(err));
+    })
 
     return (
         <div className={styles.container}>
             <h2>{title}</h2>
-            <div 
+            {/* <div 
                 className={
                     installments[0] ? 
                     `${styles.notification} ${styles.active}` 
@@ -52,6 +65,12 @@ export default function Header({ title }: Props) {
                             </div>
                         ))
                     }
+            </div> */}
+            <div className={styles.functions}>
+            </div>
+            <div className={styles.user}>
+                <strong>{collaborator?.col_name}</strong>
+                <span>{collaborator?.col_function}</span>
             </div>
         </div>
     );

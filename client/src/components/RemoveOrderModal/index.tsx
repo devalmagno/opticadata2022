@@ -1,6 +1,6 @@
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 
-import { OrderInfo } from "../../pages/orders";
+import { Sale } from "../../pages/orders";
 import { api } from "../../services/api";
 
 import styles from "./styles.module.scss";
@@ -9,8 +9,8 @@ type Props = {
     showModal: boolean;
     setShowModal: Dispatch<SetStateAction<boolean>>;
     setShowOrderModal: Dispatch<SetStateAction<boolean>>;
-    currentOrder: OrderInfo;
-    ordersArray: OrderInfo[];
+    currentOrder: Sale;
+    ordersArray: Sale[];
 };
 
 const RemoveModal = ({
@@ -22,15 +22,10 @@ const RemoveModal = ({
 }: Props) => {
     const [isButton, setIsButton] = useState(false);
 
-    const { order } = currentOrder;
-    
     const handleRemoveOrder = async (e: FormEvent) => {
         e.preventDefault();
         
-        const index = ordersArray.indexOf(currentOrder);
-        
-        api.delete(`/orders/${order.id}`).then(() => {
-            ordersArray.splice(index, 1);
+        api.put(`/sales/status/${currentOrder.sal_id}`).then(() => {
             setShowModal(!showModal);
             setShowOrderModal(false);
         }).catch(err => { console.log(err) });

@@ -30,6 +30,18 @@ class PaymentsController {
         }
     }
 
+    async getPayments(req: Request, res: Response) {
+        const paymentsService = new PaymentsService();
+
+        try {
+            const payments = await paymentsService.getPayments();
+
+            return res.status(200).json(payments);
+        } catch(err) {
+            return res.status(400).json({ message: err.message });
+        }
+    }
+
     async getPaymentsBySaleId(req: Request, res: Response) {
         const { id } = req.params;
 

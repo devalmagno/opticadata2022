@@ -7,7 +7,7 @@ import { CollaboratorsLogsService } from "../services/CollaboratorLogsService";
 
 interface ICollaboratorsCreate {
     col_name: string;
-    col_cpf: string;
+    col_cpf?: string;
     col_function: string;
 };
 
@@ -62,7 +62,17 @@ class CollaboratorsService {
         return collaborator;
     }
 
-    async updateCollaborator(id: string, { col_function, col_name }: ICollaboratorsCreate) {
+    async getCollaboratorByCPF(cpf: string) {
+        const collaborator = await this.collaboratorsRepository.findOne({
+            col_cpf: cpf
+        });
+
+        if (!collaborator) throw new Error("Collaborator does not exists!");
+
+        return collaborator;
+    }
+
+    async updateCollaborator(id: string, { col_function, col_name, col_cpf }: ICollaboratorsCreate) {
         const collaborator = await this.collaboratorsRepository.findOne({
             col_id: id
         });
