@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Router from "next/router";
-import { ReactNode, useContext, useEffect, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
 import { destroyCookie } from "nookies";
 import { MdAddShoppingCart } from "react-icons/md";
 
@@ -18,7 +18,8 @@ import Loading from "../Loading";
 import OrderSidebar from "../OrderSidebar";
 
 type Props = {
-    children: ReactNode;
+    sidebar: boolean;
+    setSidebar: Dispatch<SetStateAction<boolean>>;
 };
 
 type Settings = {
@@ -37,7 +38,7 @@ type Collaborator = {
     col_function: string;
 }
 
-const Sidebar = () => {
+const Sidebar = ({ setSidebar, sidebar }: Props) => {
     const { user, collaborator } = useContext(AuthContext);
 
     const [sideBar, setSideBar] = useState(false);
@@ -72,6 +73,7 @@ const Sidebar = () => {
                     className={styles.menu}
                     onClick={() => {
                         setSideBar(!sideBar);
+                        setSidebar(!sidebar);
                     }}
                 >
                     <div className={styles.burger}></div>
@@ -89,7 +91,7 @@ const Sidebar = () => {
                 )}
 
             <ul className={styles.nav_list}>
-                <li>
+                {/* <li>
                     <Link href="/dashboard">
                         <a>
                             <IoGrid className={styles.icons} />
@@ -97,7 +99,7 @@ const Sidebar = () => {
                         </a>
                     </Link>
                     <span className={styles.tooltip}>Dashboard</span>
-                </li>
+                </li> */}
 
                 {user?.user_is_admin ? (
                     <li>

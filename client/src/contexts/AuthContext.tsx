@@ -75,7 +75,7 @@ const AuthProvider = ({ children }: AuxPropsType) => {
             setUser(user);
             setCollaborator(collaborator);
 
-            Router.push('/dashboard');
+            Router.push('/users');
         }
     }
 

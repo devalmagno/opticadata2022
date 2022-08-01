@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import Header from "../components/Header";
+import Sidebar from "../components/Sidebar";
 import { AddButton } from "../components/AddButton";
 import { StockTable } from "../components/StockTable";
 import { StockMovesTable } from "../components/StockMovesTable";
@@ -9,7 +10,9 @@ import { Product } from "../pages/orders";
 
 import { api } from "../services/api";
 
-import styles from "../styles/stocks.module.scss";
+import styles from "../styles/pages.module.scss";
+import { GetServerSideProps } from "next";
+import { parseCookies } from "nookies";
 
 export type Stocks = {
     sto_id: string;
@@ -40,6 +43,8 @@ const Stocks = () => {
     const [stocks, setStocks] = useState<Stocks[]>([]);
     const [stockMoves, setStockMoves] = useState<StockMoves[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
+
+    const [sidebar, setSidebar] = useState(true);
 
     useEffect(() => {
         api.get('/stocks')
@@ -75,8 +80,16 @@ const Stocks = () => {
     });
 
     return (
-        <div className={styles.container}>
+        <div className={
+            sidebar ?
+                styles.container
+                : `${styles.container} ${styles.sidebar}`
+        }>
             <Header title="Estoque" />
+            <Sidebar 
+                sidebar={sidebar}
+                setSidebar={setSidebar}
+            />
 
             <section className={styles.main}>
                 <div className={styles.buttons}>
@@ -101,5 +114,22 @@ const Stocks = () => {
         </div>
     );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+    const { "opdauth.token": token } = parseCookies(ctx);
+
+    if (!token) {
+        return {
+            redirect: {
+                destination: "/",
+                permanent: false,
+            },
+        };
+    }
+
+    return {
+        props: {},
+    };
+};
 
 export default Stocks;

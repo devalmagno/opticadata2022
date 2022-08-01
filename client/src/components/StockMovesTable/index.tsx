@@ -1,5 +1,7 @@
 import { StockMoves } from "../../pages/stocks";
 
+import { FormatedDate } from "../FormatedDate";
+
 import styles from "./styles.module.scss";
 
 type Props = {
@@ -7,12 +9,6 @@ type Props = {
 }
 
 export const StockMovesTable = ({ stockMoves }: Props) => {
-
-    const formatDate = (date: Date) => {
-        console.log(date);
-
-        return 'oi';
-    }
 
     return (
        <div className={styles.table_wrapper}>
@@ -48,7 +44,7 @@ export const StockMovesTable = ({ stockMoves }: Props) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {stockMoves.map(smo => (
+                    {stockMoves.slice(0).reverse().map(smo => (
                         <tr key={smo.smo_id}>
                             <td>
                                 {smo.smo_sto_id}
@@ -75,9 +71,9 @@ export const StockMovesTable = ({ stockMoves }: Props) => {
                                 {smo.smo_quantity}
                             </td>
                             <td>
-                                {
-                                    formatDate(smo.created_at)
-                                }
+                                <FormatedDate
+                                    date={smo.created_at}
+                                />
                             </td>
                         </tr>
                     ))}

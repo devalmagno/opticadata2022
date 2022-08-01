@@ -17,7 +17,6 @@ function MyApp({ Component, pageProps }: AppProps) {
             {
                 token ? (
                     <div className={styles.wrapper}>
-                        <Sidebar />
                         <main>
                             <Component {...pageProps} />
                             {/* <OrderSidebar />                             */}
