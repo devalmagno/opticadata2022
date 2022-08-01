@@ -11,8 +11,6 @@ import { BiCheckCircle } from "react-icons/bi";
 import { useFetch } from "../../hooks/useFetch";
 import { api } from "../../services/api";
 
-import OccupationModal from "../../components/OccupationModal";
-
 import { Collaborator } from "../../pages/users";
 
 import styles from "./styles.module.scss";

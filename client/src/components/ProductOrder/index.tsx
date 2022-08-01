@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 
-import { Product } from "../OrderSidebar";
+import { Product } from "../../pages/orders";
 
 import styles from "./styles.module.scss";
 
@@ -20,9 +20,9 @@ const ProductOrder = ({ products, orderProducts, setOrderProducts }: Props) => {
         setAmount(0);
     }
 
-    if (currentProduct && amount > currentProduct.quantity) {
-        setAmount(currentProduct.quantity);
-    }
+    // if (currentProduct && amount > currentProduct.quantity) {
+    //     setAmount(currentProduct.quantity);
+    // }
 
     const optionsContainerRef = useRef<HTMLDivElement>(null);
     const optionsListRef = useRef<HTMLDivElement[]>([]);
@@ -59,16 +59,16 @@ const ProductOrder = ({ products, orderProducts, setOrderProducts }: Props) => {
     const handleOrderProducts = (product: Product) => {
         let products = [...orderProducts];
 
-        if (amount > 0 && !products.find((prod) => prod.id == product.id)) {
-            products.push({
-                id: product.id,
-                name: product.name,
-                quantity: amount,
-                unit_price: product.unit_price,
-            });
-        } else {
-            alert("Produto já adicionado ou quantidade insuficiente.")
-        }
+        // if (amount > 0 && !products.find((prod) => prod.id == product.id)) {
+        //     products.push({
+        //         // id: product.id,
+        //         // name: product.name,
+        //         // quantity: amount,
+        //         // unit_price: product.unit_price,
+        //     });
+        // } else {
+        //     alert("Produto já adicionado ou quantidade insuficiente.")
+        // }
 
         setOrderProducts(products);
         setSearchValue("");
@@ -103,7 +103,7 @@ const ProductOrder = ({ products, orderProducts, setOrderProducts }: Props) => {
                             : styles.options_container
                     }
                 >
-                    {products.map((product) => (
+                    {/* {products.map((product) => (
                         <div
                             ref={addToRefs}
                             className={styles.option}
@@ -122,7 +122,7 @@ const ProductOrder = ({ products, orderProducts, setOrderProducts }: Props) => {
                                 {product.name}
                             </label>
                         </div>
-                    ))}
+                    ))} */}
                 </div>
 
                 <div
@@ -131,9 +131,9 @@ const ProductOrder = ({ products, orderProducts, setOrderProducts }: Props) => {
                     }}
                     className={styles.selected}
                 >
-                    {currentProduct
+                    {/* {currentProduct
                         ? currentProduct.name
-                        : "Selecione um produto"}
+                        : "Selecione um produto"} */}
 
                     <div className={styles.bottom}></div>
                 </div>
@@ -159,22 +159,22 @@ const ProductOrder = ({ products, orderProducts, setOrderProducts }: Props) => {
             >
                 <div className={`${styles.box} ${styles.stock}`}>
                     <strong>Estoque</strong>
-                    {currentProduct != null && currentProduct.quantity > 0 ? (
+                    {/* {currentProduct != null && currentProduct.quantity > 0 ? (
                         <span className={styles.available}>Disponível</span>
                     ) : (
                         <span className={styles.notAvailable}>Em falta</span>
-                    )}
+                    )} */}
                 </div>
 
                 <div className={`${styles.box} ${styles.amount}`}>
                     <strong>Quantidade</strong>
                     <div
-                        className={
-                            currentProduct != null &&
-                            currentProduct?.quantity > 0
-                                ? styles.amountBox
-                                : `${styles.amountBox} ${styles.disabled}`
-                        }
+                        // className={
+                        //     currentProduct != null &&
+                        //     currentProduct?.quantity > 0
+                        //         ? styles.amountBox
+                        //         : `${styles.amountBox} ${styles.disabled}`
+                        // }
                     >
                         <div
                             onClick={() => {
@@ -185,7 +185,7 @@ const ProductOrder = ({ products, orderProducts, setOrderProducts }: Props) => {
                             -
                         </div>
                         <div className={styles.quantity}>
-                            {amount} /{currentProduct?.quantity}
+                            {/* {amount} /{currentProduct?.quantity} */}
                         </div>
                         <div
                             onClick={() => {
@@ -200,11 +200,11 @@ const ProductOrder = ({ products, orderProducts, setOrderProducts }: Props) => {
             </div>
 
             <div
-                className={
-                    currentProduct != null && currentProduct.quantity > 0
-                        ? styles.button
-                        : `${styles.button} ${styles.disabled}`
-                }
+                // className={
+                //     currentProduct != null && currentProduct.quantity > 0
+                //         ? styles.button
+                //         : `${styles.button} ${styles.disabled}`
+                // }
             >
                 <button
                     onClick={() => {
@@ -218,17 +218,17 @@ const ProductOrder = ({ products, orderProducts, setOrderProducts }: Props) => {
             </div>
 
             <div className={styles.orderProducts}>
-                {orderProducts.map((prod) => (
-                    <div
-                        key={prod.id}
-                        className={styles.boxProd}
-                        onClick={() => {
-                            removeProductFromOrder(prod);
-                        }}
-                    >
-                        <span>{prod.name}</span>
-                    </div>
-                ))}
+                {/* {orderProducts.map((prod) => (
+                    // <div
+                    //     key={prod.id}
+                    //     className={styles.boxProd}
+                    //     onClick={() => {
+                    //         removeProductFromOrder(prod);
+                    //     }}
+                    // >
+                    //     <span>{prod.name}</span>
+                    // </div>
+                ))} */}
             </div>
         </div>
     );

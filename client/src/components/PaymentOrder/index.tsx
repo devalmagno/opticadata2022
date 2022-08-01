@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-import { Payment, Customer } from "../OrderSidebar";
+import { Payment, Customer } from "../../pages/orders";
 
 import styles from "./styles.module.scss";
 
@@ -23,10 +23,10 @@ const PaymentOrder = ({ orderPayment, setOrderPayment, customer }: Props) => {
     }
 
     useEffect(() => {
-        setOrderPayment({
-            type_of_payment: typeOfPayment.toString(),
-            payment_date: paymentDates,
-        });
+        // setOrderPayment({
+        //     type_of_payment: typeOfPayment.toString(),
+        //     payment_date: paymentDates,
+        // });
     }, [typeOfPayment, paymentDates]);
 
     const handlePaymentDate = (date: string) => {

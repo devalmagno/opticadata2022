@@ -5,7 +5,10 @@ import cors from "cors";
 import createConnection from "./database";
 import { routes } from "./routes";
 
-createConnection();
+createConnection()
+    .then(async () => {
+        console.log('Connected to database');
+    }).catch(err => console.log(err));
 
 const app = express();
 const http = createServer(app);

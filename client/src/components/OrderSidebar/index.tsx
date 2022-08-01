@@ -114,11 +114,11 @@ const OrderSidebar = ({
             </header>
 
             <div className={styles.container}>
-                <ProductOrder
+                {/* <ProductOrder
                     products={products}
                     orderProducts={saleProducts}
                     setOrderProducts={setSaleProducts}
-                />
+                /> */}
 
                 <CustomerOrder
                     customers={customers}
@@ -126,11 +126,11 @@ const OrderSidebar = ({
                     setOrderCustomers={setCustomers}
                 />
 
-                <PaymentOrder
+                {/* <PaymentOrder
                     orderPayment={orderPayment}
                     setOrderPayment={setOrderPayment}
                     customer={customers}
-                />
+                /> */}
 
                 <div style={price == 0 ? { display: "none" } : { display: "block" }}>
                     <strong>Preço total: </strong>

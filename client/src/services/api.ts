@@ -3,8 +3,12 @@ import { parseCookies } from "nookies";
 
 const { 'opdauth.token': token } = parseCookies();
 
+const url = process.env.NODE_ENV == "production"
+    ? process.env.url
+    : "http://localhost:3333";
+
 export const api = axios.create({
-    baseURL: 'http://localhost:3333'
+    baseURL: url,
 });
 
 if (token) {
